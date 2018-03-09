@@ -84,16 +84,19 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         Class fragmentClass;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragmentClass = bluetooth_console.class;
+                fragmentClass = temp_fragment.class;
                 break;
             case R.id.nav_second_fragment:
-                fragmentClass = bluetooth_console.class;
+                fragmentClass = temp_fragment.class;
                 break;
             case R.id.nav_third_fragment:
+                fragmentClass = temp_fragment.class;
+                break;
+            case R.id.nav_bluetooth_console:
                 fragmentClass = bluetooth_console.class;
                 break;
             default:
-                fragmentClass = bluetooth_console.class;
+                fragmentClass = temp_fragment.class;
         }
 
         try {
