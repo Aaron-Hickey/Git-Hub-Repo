@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,6 +50,7 @@ public class bluetooth_console extends Fragment {
     TextView dataPanel;
     EditText myTextbox;
     EditText deviceNameText;
+    Spinner deviceList;
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
     BluetoothDevice mmDevice;
@@ -100,20 +103,26 @@ public class bluetooth_console extends Fragment {
         Button openButton = (Button) view.findViewById(R.id.open);
         Button sendButton = (Button) view.findViewById(R.id.send);
         Button closeButton = (Button) view.findViewById(R.id.close);
+        Button refreshButton = (Button) view.findViewById(R.id.Refresh);
+
         myTextbox = (EditText) view.findViewById(R.id.entry);
         dataPanel = (TextView) view.findViewById(R.id.dataPanel);
         deviceNameText = view.findViewById(R.id.deviceNameText);
+        deviceList = view.findViewById(R.id.deviceList);
         //Open Button
         openButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    findBT();
                     openBT();
                 } catch (IOException ex) {
                 }
             }
         });
-
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                    findBT();
+            }
+        });
         //Send Button
         sendButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -133,6 +142,7 @@ public class bluetooth_console extends Fragment {
                 }
             }
         });
+        findBT();
         return view;
     }
 
@@ -186,10 +196,15 @@ public class bluetooth_console extends Fragment {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetooth, 0);
         }
+        ArrayList<String> foundDevices = new ArrayList<String>();
 
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
+                foundDevices.add(device.getName().toString());
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.simple_spinner_item, foundDevices);
+                deviceList.setAdapter(adapter);
                 String deviceName = deviceNameText.getText().toString();
                 if (device.getName().equals(deviceName)) {
                     mmDevice = device;
