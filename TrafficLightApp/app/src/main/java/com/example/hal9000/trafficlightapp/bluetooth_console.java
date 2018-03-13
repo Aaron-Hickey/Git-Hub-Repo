@@ -29,15 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link bluetooth_console.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link bluetooth_console#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class bluetooth_console extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,20 +53,12 @@ public class bluetooth_console extends Fragment {
     int counter;
     volatile boolean stopWorker;
     private OnFragmentInteractionListener mListener;
+    String data;
 
     public bluetooth_console() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment bluetooth_console.
-     */
-    // TODO: Rename and change types and number of parameters
     public static bluetooth_console newInstance(String param1, String param2) {
         bluetooth_console fragment = new bluetooth_console();
         Bundle args = new Bundle();
@@ -98,7 +81,7 @@ public class bluetooth_console extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_bluetooth_console, container, false);
+        View view = inflater.inflate(R.layout.fragment_bluetooth_console, container, false);
 
         Button openButton = (Button) view.findViewById(R.id.open);
         Button sendButton = (Button) view.findViewById(R.id.send);
@@ -120,7 +103,7 @@ public class bluetooth_console extends Fragment {
         });
         refreshButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                    findBT();
+                findBT();
             }
         });
         //Send Button
@@ -221,7 +204,6 @@ public class bluetooth_console extends Fragment {
         mmSocket.connect();
         mmOutputStream = mmSocket.getOutputStream();
         mmInputStream = mmSocket.getInputStream();
-
         beginListenForData();
 
         String tempData = dataPanel.getText().toString();
@@ -243,34 +225,40 @@ public class bluetooth_console extends Fragment {
                         if (bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
                             mmInputStream.read(packetBytes);
-                            for (int i = 0; i < bytesAvailable; i++) {
-                                byte b = packetBytes[i];
-                                if (b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-                                    readBufferPosition = 0;
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            String tempData = dataPanel.getText().toString();
-                                            dataPanel.setText(tempData + data);
+                            byte[] encodedBytes = new byte[readBufferPosition];
+                            System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                            final String data = new String(packetBytes, "US-ASCII");
+                            readBufferPosition = 0;
 
-                                        }
-                                    });
-                                } else {
-                                    readBuffer[readBufferPosition++] = b;
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    String tempData = dataPanel.getText().toString();
+                                    dataPanel.setText(tempData + data +"\n");
+                                    System.out.println(data);
+
                                 }
-                            }
+                            });
+
+
+                            Thread.sleep(100);
+
                         }
-                    } catch (IOException ex) {
-                        stopWorker = true;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         });
-
         workerThread.start();
+    }
+
+    void printData(String s) {
+        String tempData = dataPanel.getText().toString();
+        dataPanel.setText(tempData + s);
     }
 
     void sendData() throws IOException {

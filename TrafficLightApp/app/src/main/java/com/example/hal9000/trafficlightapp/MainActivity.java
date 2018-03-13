@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener , global_view.OnFragmentInteractionListener, monitoring.OnFragmentInteractionListener{
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView nvDrawer;
@@ -84,13 +84,13 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         Class fragmentClass;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragmentClass = temp_fragment.class;
+                fragmentClass = global_view.class;
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = temp_fragment.class;
                 break;
             case R.id.nav_third_fragment:
-                fragmentClass = temp_fragment.class;
+                fragmentClass = monitoring.class;
                 break;
             case R.id.nav_bluetooth_console:
                 fragmentClass = bluetooth_console.class;
