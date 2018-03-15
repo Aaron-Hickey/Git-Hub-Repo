@@ -1,6 +1,5 @@
 package com.example.hal9000.trafficlightapp;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -23,24 +22,13 @@ import java.util.UUID;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 public class bluetooth_console extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     TextView dataPanel;
-    EditText myTextbox;
-    EditText deviceNameText;
+    EditText sendBox;
     Spinner deviceList;
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
@@ -50,31 +38,23 @@ public class bluetooth_console extends Fragment {
     Thread workerThread;
     byte[] readBuffer;
     int readBufferPosition;
-    int counter;
     volatile boolean stopWorker;
     private OnFragmentInteractionListener mListener;
-    String data;
 
     public bluetooth_console() {
         // Required empty public constructor
     }
 
-    public static bluetooth_console newInstance(String param1, String param2) {
+    public static bluetooth_console newInstance() {
         bluetooth_console fragment = new bluetooth_console();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -88,9 +68,8 @@ public class bluetooth_console extends Fragment {
         Button closeButton = (Button) view.findViewById(R.id.close);
         Button refreshButton = (Button) view.findViewById(R.id.Refresh);
 
-        myTextbox = (EditText) view.findViewById(R.id.entry);
+        sendBox = (EditText) view.findViewById(R.id.entry);
         dataPanel = (TextView) view.findViewById(R.id.dataPanel);
-        deviceNameText = view.findViewById(R.id.deviceNameText);
         deviceList = view.findViewById(R.id.deviceList);
         //Open Button
         openButton.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +82,7 @@ public class bluetooth_console extends Fragment {
         });
         refreshButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                findBT();
+                displayDevices();
             }
         });
         //Send Button
@@ -125,11 +104,11 @@ public class bluetooth_console extends Fragment {
                 }
             }
         });
-        findBT();
+        connectAdapter();
+        displayDevices();
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -153,34 +132,14 @@ public class bluetooth_console extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
 
-    void findBT() {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            dataPanel.setText("No bluetooth adapter available");
-        }
-
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBluetooth, 0);
-        }
+    void displayDevices() {
         ArrayList<String> foundDevices = new ArrayList<String>();
-
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -188,17 +147,34 @@ public class bluetooth_console extends Fragment {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                         android.R.layout.simple_spinner_item, foundDevices);
                 deviceList.setAdapter(adapter);
-                String deviceName = deviceNameText.getText().toString();
+            }
+        }
+    }
+
+    void connectAdapter() {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            dataPanel.append("No bluetooth adapter available\n");
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBluetooth, 0);
+        }
+    }
+
+    void openBT() throws IOException {
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+
+                String deviceName = deviceList.getSelectedItem().toString();
                 if (device.getName().equals(deviceName)) {
                     mmDevice = device;
                     break;
                 }
             }
         }
-        dataPanel.setText("Bluetooth Device Found");
-    }
-
-    void openBT() throws IOException {
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
         mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
         mmSocket.connect();
@@ -206,8 +182,7 @@ public class bluetooth_console extends Fragment {
         mmInputStream = mmSocket.getInputStream();
         beginListenForData();
 
-        String tempData = dataPanel.getText().toString();
-        dataPanel.setText(tempData + "Bluetooth Opened");
+        dataPanel.append("Bluetooth Open\n");
     }
 
     void beginListenForData() {
@@ -233,8 +208,7 @@ public class bluetooth_console extends Fragment {
 
                             handler.post(new Runnable() {
                                 public void run() {
-                                    String tempData = dataPanel.getText().toString();
-                                    dataPanel.setText(tempData + data +"\n");
+                                    dataPanel.append(data);
                                     System.out.println(data);
 
                                 }
@@ -256,16 +230,12 @@ public class bluetooth_console extends Fragment {
         workerThread.start();
     }
 
-    void printData(String s) {
-        String tempData = dataPanel.getText().toString();
-        dataPanel.setText(tempData + s);
-    }
 
     void sendData() throws IOException {
-        String msg = myTextbox.getText().toString();
+        String msg = sendBox.getText().toString();
         msg += "\n";
         mmOutputStream.write(msg.getBytes());
-        dataPanel.setText("Data Sent");
+        dataPanel.append("Data Sent\n");
     }
 
     void closeBT() throws IOException {
@@ -276,5 +246,6 @@ public class bluetooth_console extends Fragment {
         String tempData = dataPanel.getText().toString();
         dataPanel.setText(tempData + "Bluetooth Closed");
     }
+
 }
 

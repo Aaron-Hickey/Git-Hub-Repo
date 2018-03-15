@@ -4,15 +4,19 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_first_fragment"
+            android:icon="@drawable/ic_global"
             android:title="Global View" />
         <item
             android:id="@+id/nav_second_fragment"
+            android:icon="@drawable/ic_config"
             android:title="Config" />
         <item
             android:id="@+id/nav_third_fragment"
+            android:icon="@drawable/ic_monitoring"
             android:title="Monitoring" />
         <item
             android:id="@+id/nav_bluetooth_console"
+            android:icon="@drawable/ic_bluetooth"
             android:title="Bluetooth Console" />
     </group>
 </menu>

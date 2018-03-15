@@ -1,44 +1,36 @@
 package com.example.hal9000.trafficlightapp;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link monitoring.OnFragmentInteractionListener} interface
+ * {@link config.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link monitoring#newInstance} factory method to
+ * Use the {@link config#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class monitoring extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class config extends Fragment {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
 
     private OnFragmentInteractionListener mListener;
 
-    View view;
-
-    public monitoring() {
+    public config() {
         // Required empty public constructor
     }
 
-    public static monitoring newInstance() {
-        monitoring fragment = new monitoring();
+
+    // TODO: Rename and change types and number of parameters
+    public static config newInstance() {
+        config fragment = new config();
 
         return fragment;
     }
@@ -53,10 +45,7 @@ public class monitoring extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_monitoring, container, false);
-        displayWarning("opticalWarning");
-
-        return view;
+        return inflater.inflate(R.layout.fragment_config, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -96,12 +85,5 @@ public class monitoring extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    public void displayWarning(String s) {
-        Resources res = getResources();
-        int id = res.getIdentifier(s, "id", getContext().getPackageName());
-        LinearLayout tempLayout = view.findViewById(id);
-        tempLayout.setVisibility(View.VISIBLE);
     }
 }
