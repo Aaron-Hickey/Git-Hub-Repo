@@ -21,13 +21,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Typologie" />
+                android:text="Typology" />
 
             <Spinner
-                android:id="@+id/spinner2"
+                android:id="@+id/typologySpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:entries="@array/typology_array" />
 
         </LinearLayout>
 
@@ -41,16 +42,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
-                tools:text="Distance" />
+                android:text="Distance" />
 
             <Spinner
-                android:id="@+id/spinner"
+                android:id="@+id/distanceSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-
-                />
+                android:entries="@array/distance_array" />
 
         </LinearLayout>
 
@@ -60,6 +59,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Invalid" />
+
+        <Button
+            android:id="@+id/applyButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Apply" />
 
     </LinearLayout>
 </FrameLayout>

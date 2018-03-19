@@ -5,4 +5,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="typology_array">
+        <item>2 Lights</item>
+        <item>3 Lights</item>
+        <item>4 Lights</item>
+
+    </string-array>
+
+    <string-array name="distance_array">
+        <item>100</item>
+        <item>200</item>
+        <item>500</item>
+
+    </string-array>
 </resources>

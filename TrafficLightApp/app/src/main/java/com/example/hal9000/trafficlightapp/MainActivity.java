@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     private Toolbar toolbar;
     private NavigationView nvDrawer;
 
-    Fragment globalF;
+    public Fragment globalF;
     Fragment configF;
     Fragment monitorF;
     Fragment consoleF;
@@ -57,10 +57,10 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         configF = config.newInstance();
         monitorF = monitoring.newInstance();
         consoleF = bluetooth_console.newInstance();
-        fragmentManager.beginTransaction().add(R.id.flContent,globalF).commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,configF).hide(configF).commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,monitorF).hide(monitorF).commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,consoleF).hide(consoleF).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent,globalF,"globalF").commit();
+        fragmentManager.beginTransaction().add(R.id.flContent,configF,"configF").hide(configF).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent,monitorF,"monitorF").hide(monitorF).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent,consoleF,"consoleF").hide(consoleF).commit();
         currentF = globalF;
     }
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -123,11 +123,6 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 fragment = globalF;
         }
 
-
-        // Insert the fragment by replacing any existing fragment
-       // fragmentManager = getSupportFragmentManager();
-        //fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-        //ft.add( R.id.flContent,fragment);
         fragmentManager.beginTransaction()
                 .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                 .hide(currentF)
@@ -139,16 +134,21 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
 
         currentF = fragment;
 
-        // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
-        // Set action bar title
         setTitle(menuItem.getTitle());
-        // Close the navigation drawer
         mDrawer.closeDrawers();
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
         //you can leave it empty
+    }
+
+    @Override
+    public void updateGlobal(String t) {
+        global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
+        f.applyTypology(t);
+
+
     }
 }
