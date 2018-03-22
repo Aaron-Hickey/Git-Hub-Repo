@@ -9,13 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
 
 public class global_view extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
-    ImageView roadImage;
-
+    SubsamplingScaleImageView imageView;
     public global_view() {
         // Required empty public constructor
     }
@@ -36,8 +38,10 @@ public class global_view extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_global_view, container, false);
-        roadImage = view.findViewById(R.id.roadView);
-        applyTypology("3way");
+        imageView = (SubsamplingScaleImageView)view.findViewById(R.id.imageView);
+       // imageView.setImage(ImageSource.asset("road2.png"));
+
+        applyTypology("2 Lights");
         return view;
     }
 
@@ -69,16 +73,13 @@ public class global_view extends Fragment {
     {
         if(Typology.equals("2 Lights"))
         {
-            roadImage.setImageResource(R.drawable.ic_road2);
-        }
+            imageView.setImage(ImageSource.asset("road2.png"));        }
         if(Typology.equals("3 Lights"))
         {
-            roadImage.setImageResource(R.drawable.ic_road3);
-        }
+            imageView.setImage(ImageSource.asset("road3.png"));        }
         if(Typology.equals("4 Lights"))
         {
-            roadImage.setImageResource(R.drawable.ic_road4);
-        }
+            imageView.setImage(ImageSource.asset("road4.png"));        }
     }
 
     public interface OnFragmentInteractionListener {
