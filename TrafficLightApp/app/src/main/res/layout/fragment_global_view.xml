@@ -7,16 +7,9 @@
     android:id="@+id/global_view"
     >
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        <com.example.hal9000.trafficlightapp.PinView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    </LinearLayout>
 </FrameLayout>
