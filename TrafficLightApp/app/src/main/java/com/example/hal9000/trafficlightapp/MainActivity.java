@@ -25,24 +25,17 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     Fragment consoleF;
     Fragment currentF;
     FragmentManager fragmentManager;
-    // Make sure to be using android.support.v7.app.ActionBarDrawerToggle version.
-    // The android.support.v4.app.ActionBarDrawerToggle has been deprecated.
+
     private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         nvDrawer = (NavigationView) findViewById(R.id.nvView);
-        // Setup drawer view
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
@@ -70,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         drawerToggle.syncState();
 
     }
@@ -78,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggles
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
@@ -103,39 +94,26 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
 
 
     public void selectDrawerItem(MenuItem menuItem) {
-        // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
-        //Class fragmentClass;
         switch (menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragment = globalF;
+                swapFragment(globalF);
                 break;
             case R.id.nav_second_fragment:
-                fragment = configF;
+                swapFragment(configF);
                 break;
             case R.id.nav_third_fragment:
-                fragment = monitorF;
+                swapFragment(monitorF);
                 break;
             case R.id.nav_bluetooth_console:
-                fragment = consoleF;
+                swapFragment(consoleF);
                 break;
             default:
-                fragment = globalF;
+                swapFragment(globalF);
         }
 
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                .hide(currentF)
-                .commit();
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                .show(fragment)
-                .commit();
 
-        currentF = fragment;
-
-        menuItem.setChecked(true);
-        setTitle(menuItem.getTitle());
+       // menuItem.setChecked(true);
+        //setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
 
@@ -148,7 +126,20 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     public void updateGlobal(String t) {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
         f.applyTypology(t);
-
-
+        swapFragment(globalF);
     }
+    public void swapFragment(Fragment n)
+    {
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .hide(currentF)
+                .commit();
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .show(n)
+                .commit();
+
+        currentF = n;
+    }
+
 }

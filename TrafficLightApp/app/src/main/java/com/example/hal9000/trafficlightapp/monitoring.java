@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 public class monitoring extends Fragment {
@@ -19,6 +20,7 @@ public class monitoring extends Fragment {
     ImageView greenImage;
     ImageView yellowImage;
     ImageView redImage;
+    TextView typologyText;
 
     public monitoring() {}
 
@@ -48,6 +50,12 @@ public class monitoring extends Fragment {
         greenImage = view.findViewById(R.id.greenLight);
         yellowImage = view.findViewById(R.id.yellowLight);
         redImage = view.findViewById(R.id.redLight);
+        typologyText = view.findViewById(R.id.typologyText);
+    }
+
+    public void updateInfo(String t)
+    {
+        typologyText.setText(t);
     }
     public void disableLight(ImageView light)
     {
@@ -91,4 +99,6 @@ public class monitoring extends Fragment {
         LinearLayout tempLayout = view.findViewById(id);
         tempLayout.setVisibility(View.VISIBLE);
     }
+
+
 }

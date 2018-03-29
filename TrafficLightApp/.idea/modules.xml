@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TrafficLightApp.iml" filepath="$PROJECT_DIR$/TrafficLightApp.iml" />
-      <module fileurl="file://C:\Users\HAL 9000\Documents\Git-Hub-Repo\TrafficLightApp\TrafficLightApp.iml" filepath="C:\Users\HAL 9000\Documents\Git-Hub-Repo\TrafficLightApp\TrafficLightApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

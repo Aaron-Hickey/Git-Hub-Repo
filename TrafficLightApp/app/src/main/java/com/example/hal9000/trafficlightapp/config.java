@@ -16,6 +16,7 @@ public class config extends Fragment {
     private OnFragmentInteractionListener mListener;
     Button applyButton;
     Spinner typologyOptions;
+
     public config() {
     }
 
@@ -39,8 +40,6 @@ public class config extends Fragment {
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String typologyOptionsValue = typologyOptions.getSelectedItem().toString();
-                System.out.println(typologyOptionsValue);
-                System.out.println("works");
                 mListener.updateGlobal(typologyOptionsValue);
             }
         });
