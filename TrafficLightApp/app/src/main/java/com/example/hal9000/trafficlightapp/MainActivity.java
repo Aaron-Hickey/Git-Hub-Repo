@@ -1,7 +1,6 @@
 package com.example.hal9000.trafficlightapp;
 
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +13,7 @@ import android.support.v7.widget.Toolbar;
 
 
 
-public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener, global_view.OnFragmentInteractionListener, monitoring.OnFragmentInteractionListener, config.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener, global_view.globalInterface, monitoring.OnFragmentInteractionListener, config.configInterface {
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView nvDrawer;
@@ -118,8 +117,16 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        //you can leave it empty
+    public void returnToGlobal() {
+        global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
+        swapFragment(globalF);
+    }
+
+    @Override
+    public void updateMonitoring(trafficLight t) {
+        monitoring f = (monitoring) fragmentManager.findFragmentByTag("monitorF");
+        f.updateInfo(t);
+        swapFragment(monitorF);
     }
 
     @Override
@@ -128,18 +135,21 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         f.applyTypology(t);
         swapFragment(globalF);
     }
+
     public void swapFragment(Fragment n)
     {
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                .hide(currentF)
-                .commit();
-        fragmentManager.beginTransaction()
-                .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
-                .show(n)
-                .commit();
+        if(currentF != n)
+        {
+            fragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                    .hide(currentF)
+                    .commit();
+            fragmentManager.beginTransaction()
+                    .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                    .show(n)
+                    .commit();
 
-        currentF = n;
+            currentF = n;
+        }
     }
-
 }

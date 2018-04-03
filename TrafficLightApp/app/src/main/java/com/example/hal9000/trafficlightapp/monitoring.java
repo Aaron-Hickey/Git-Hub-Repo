@@ -8,10 +8,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
@@ -21,7 +21,8 @@ public class monitoring extends Fragment {
     ImageView yellowImage;
     ImageView redImage;
     TextView typologyText;
-
+    TextView idText;
+    ImageButton backButton;
     public monitoring() {}
 
     public static monitoring newInstance() {
@@ -43,19 +44,29 @@ public class monitoring extends Fragment {
         initVariables();
         disableLight(greenImage);
         disableLight(yellowImage);
+
+        backButton = view.findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mListener.returnToGlobal();
+            }
+        });
+
         return view;
     }
+
     public void initVariables()
     {
         greenImage = view.findViewById(R.id.greenLight);
         yellowImage = view.findViewById(R.id.yellowLight);
         redImage = view.findViewById(R.id.redLight);
         typologyText = view.findViewById(R.id.typologyText);
+        idText = view.findViewById(R.id.idText);
     }
 
-    public void updateInfo(String t)
+    public void updateInfo(trafficLight t)
     {
-        typologyText.setText(t);
+        idText.setText(Integer.toString(t.getId()));
     }
     public void disableLight(ImageView light)
     {
@@ -64,12 +75,6 @@ public class monitoring extends Fragment {
     public void enableLight(ImageView light)
     {
         light.setVisibility(View.VISIBLE);
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -90,7 +95,7 @@ public class monitoring extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void returnToGlobal();
     }
 
     public void displayWarning(String s) {
@@ -99,6 +104,4 @@ public class monitoring extends Fragment {
         LinearLayout tempLayout = view.findViewById(id);
         tempLayout.setVisibility(View.VISIBLE);
     }
-
-
 }

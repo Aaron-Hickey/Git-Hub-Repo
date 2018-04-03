@@ -109,12 +109,6 @@ public class bluetooth_console extends Fragment {
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -133,9 +127,7 @@ public class bluetooth_console extends Fragment {
     }
 
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
+    public interface OnFragmentInteractionListener { }
 
 
     void displayDevices() {
@@ -187,7 +179,7 @@ public class bluetooth_console extends Fragment {
 
     void beginListenForData() {
         final Handler handler = new Handler();
-        final byte delimiter = 10; //This is the ASCII code for a newline character
+        //final byte delimiter = 10; //This is the ASCII code for a newline character
 
         stopWorker = false;
         readBufferPosition = 0;

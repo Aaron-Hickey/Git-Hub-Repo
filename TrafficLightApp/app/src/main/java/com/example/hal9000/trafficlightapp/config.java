@@ -1,10 +1,8 @@
 package com.example.hal9000.trafficlightapp;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +11,7 @@ import android.widget.Spinner;
 
 public class config extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
+    private configInterface mListener;
     Button applyButton;
     Spinner typologyOptions;
 
@@ -28,7 +26,6 @@ public class config extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -36,6 +33,7 @@ public class config extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_config, container, false);
         typologyOptions = view.findViewById(R.id.typologySpinner);
+
         applyButton = view.findViewById(R.id.applyButton);
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -46,17 +44,11 @@ public class config extends Fragment {
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof configInterface) {
+            mListener = (configInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -69,10 +61,8 @@ public class config extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-
-        public void updateGlobal(String t);
+    public interface configInterface {
+        void updateGlobal(String t);
 
     }
 }

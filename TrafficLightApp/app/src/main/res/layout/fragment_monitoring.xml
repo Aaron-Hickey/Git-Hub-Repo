@@ -5,12 +5,23 @@
     android:layout_height="match_parent"
     tools:context="com.example.hal9000.trafficlightapp.monitoring">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="90"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_back" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +72,24 @@
                 android:layout_weight="10"
                 android:paddingBottom="150dp"
                 android:paddingTop="150dp">
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="25">
 
+                    <TextView
+                        android:id="@+id/textbox6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ID: " />
+
+                    <TextView
+                        android:id="@+id/idText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TextView" />
+
+                </TableRow>
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -80,9 +108,6 @@
                         android:text="TextView" />
 
                 </TableRow>
-
-
-
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -263,6 +288,7 @@
                     android:layout_height="wrap_content"
                     android:text="IOS" />
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

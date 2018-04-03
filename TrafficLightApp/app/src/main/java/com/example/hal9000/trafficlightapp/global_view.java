@@ -2,7 +2,6 @@ package com.example.hal9000.trafficlightapp;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.GestureDetector;
@@ -10,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import java.util.ArrayList;
 public class global_view extends Fragment {
 
 
-    private OnFragmentInteractionListener mListener;
+    private globalInterface mListener;
     private PinView imageView;
     private View view;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
@@ -46,17 +44,11 @@ public class global_view extends Fragment {
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof globalInterface) {
+            mListener = (globalInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -156,11 +148,7 @@ public class global_view extends Fragment {
                         {
                             if(id == trafficLightList.get(x).getId())
                             {
-                                Context context = getContext();
-                                CharSequence text = "Traffic Light: "+ id;
-                                int duration = Toast.LENGTH_SHORT;
-                                Toast toast = Toast.makeText(context, text, duration);
-                                toast.show();
+                                mListener.updateMonitoring(trafficLightList.get(x));
                             }
                         }
                     }
@@ -176,7 +164,7 @@ public class global_view extends Fragment {
         });
         return false;
     }
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public interface globalInterface {
+        void updateMonitoring(trafficLight t);
     }
 }
