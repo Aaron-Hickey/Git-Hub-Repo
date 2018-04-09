@@ -11,34 +11,31 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 
-
-
 public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener, global_view.globalInterface, monitoring.OnFragmentInteractionListener, config.configInterface {
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView nvDrawer;
-
-    public Fragment globalF;
-    Fragment configF;
-    Fragment monitorF;
-    Fragment consoleF;
-    Fragment currentF;
-    FragmentManager fragmentManager;
-
+    private Fragment globalF;
+    private Fragment configF;
+    private Fragment monitorF;
+    private Fragment consoleF;
+    private Fragment currentF;
+    private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
-
+    private boolean monitorVisible = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        mDrawer =  findViewById(R.id.drawer_layout);
+        nvDrawer =  findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
         setUpFragments();
+        setTitle("");
 
     }
 
@@ -51,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         consoleF = bluetooth_console.newInstance();
         fragmentManager.beginTransaction().add(R.id.flContent,globalF,"globalF").commit();
         fragmentManager.beginTransaction().add(R.id.flContent,configF,"configF").hide(configF).commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,monitorF,"monitorF").hide(monitorF).commit();
+        fragmentManager.beginTransaction().add(R.id.monitorPopUp,monitorF,"monitorF").hide(monitorF).commit();
         fragmentManager.beginTransaction().add(R.id.flContent,consoleF,"consoleF").hide(consoleF).commit();
         currentF = globalF;
     }
@@ -111,28 +108,49 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         }
 
 
-       // menuItem.setChecked(true);
-        //setTitle(menuItem.getTitle());
+      //  menuItem.setChecked(true);
+       // setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
 
     @Override
     public void returnToGlobal() {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
-        swapFragment(globalF);
+        toggleMonitor();
     }
 
     @Override
     public void updateMonitoring(trafficLight t) {
         monitoring f = (monitoring) fragmentManager.findFragmentByTag("monitorF");
         f.updateInfo(t);
-        swapFragment(monitorF);
+        toggleMonitor();
+    }
+
+    public void toggleMonitor()
+    {
+         if(monitorVisible == true)
+         {
+             fragmentManager.beginTransaction()
+                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                     .hide(monitorF)
+                     .commit();
+             monitorVisible = false;
+         }
+         else
+         {
+             fragmentManager.beginTransaction()
+                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                     .show(monitorF)
+                     .commit();
+             monitorVisible = true;
+         }
     }
 
     @Override
-    public void updateGlobal(String t) {
+    public void updateGlobal(String typology, int distance, String synch, String mode) {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
-        f.applyTypology(t);
+        f.applyTypology(typology);
+
         swapFragment(globalF);
     }
 

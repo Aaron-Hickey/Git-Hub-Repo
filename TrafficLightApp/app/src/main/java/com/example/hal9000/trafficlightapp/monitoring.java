@@ -2,27 +2,25 @@ package com.example.hal9000.trafficlightapp;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
-
-    View view;
-    ImageView greenImage;
-    ImageView yellowImage;
-    ImageView redImage;
-    TextView typologyText;
-    TextView idText;
-    ImageButton backButton;
+    private View view;
+    private ImageView greenImage;
+    private ImageView yellowImage;
+    private ImageView redImage;
+    private TextView typologyText;
+    private TextView idText;
+    private Button backButton;
     public monitoring() {}
 
     public static monitoring newInstance() {
@@ -60,8 +58,8 @@ public class monitoring extends Fragment {
         greenImage = view.findViewById(R.id.greenLight);
         yellowImage = view.findViewById(R.id.yellowLight);
         redImage = view.findViewById(R.id.redLight);
-        typologyText = view.findViewById(R.id.typologyText);
-        idText = view.findViewById(R.id.idText);
+        typologyText = view.findViewById(R.id.typologyMonitor);
+        idText = view.findViewById(R.id.idMonitor);
     }
 
     public void updateInfo(trafficLight t)

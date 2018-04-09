@@ -27,23 +27,22 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 public class bluetooth_console extends Fragment {
-    TextView dataPanel;
-    EditText sendBox;
-    Spinner deviceList;
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothSocket mmSocket;
-    BluetoothDevice mmDevice;
-    OutputStream mmOutputStream;
-    InputStream mmInputStream;
-    Thread workerThread;
-    byte[] readBuffer;
-    int readBufferPosition;
+    private TextView dataPanel;
+    private EditText sendBox;
+    private Spinner deviceList;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothSocket mmSocket;
+    private BluetoothDevice mmDevice;
+    private OutputStream mmOutputStream;
+    private InputStream mmInputStream;
+    private Thread workerThread;
+    private byte[] readBuffer;
+    private int readBufferPosition;
     volatile boolean stopWorker;
+
     private OnFragmentInteractionListener mListener;
 
-    public bluetooth_console() {
-        // Required empty public constructor
-    }
+    public bluetooth_console() { }
 
     public static bluetooth_console newInstance() {
         bluetooth_console fragment = new bluetooth_console();
@@ -60,18 +59,16 @@ public class bluetooth_console extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bluetooth_console, container, false);
 
-        Button openButton = (Button) view.findViewById(R.id.open);
-        Button sendButton = (Button) view.findViewById(R.id.send);
-        Button closeButton = (Button) view.findViewById(R.id.close);
-        Button refreshButton = (Button) view.findViewById(R.id.Refresh);
+        Button openButton =  view.findViewById(R.id.open);
+        Button sendButton =  view.findViewById(R.id.send);
+        Button closeButton =  view.findViewById(R.id.close);
+        Button refreshButton = view.findViewById(R.id.Refresh);
 
-        sendBox = (EditText) view.findViewById(R.id.entry);
-        dataPanel = (TextView) view.findViewById(R.id.dataPanel);
+        sendBox = view.findViewById(R.id.entry);
+        dataPanel = view.findViewById(R.id.dataPanel);
         deviceList = view.findViewById(R.id.deviceList);
-        //Open Button
         openButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
@@ -238,6 +235,5 @@ public class bluetooth_console extends Fragment {
         String tempData = dataPanel.getText().toString();
         dataPanel.setText(tempData + "Bluetooth Closed");
     }
-
 }
 

@@ -9,20 +9,18 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import java.util.ArrayList;
 
 
 public class global_view extends Fragment {
 
-
     private globalInterface mListener;
     private PinView imageView;
     private View view;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
-    public global_view() {}
 
+    public global_view() {}
 
     public static global_view newInstance() {
         global_view fragment = new global_view();
@@ -65,6 +63,7 @@ public class global_view extends Fragment {
     {
         if(Typology.equals("2 Lights"))
         {
+            trafficLightList = new ArrayList();
             trafficLight trafficLight1 = new trafficLight(1);
             trafficLight trafficLight2 = new trafficLight(2);
 
@@ -86,6 +85,7 @@ public class global_view extends Fragment {
         }
         if(Typology.equals("3 Lights"))
         {
+            trafficLightList = new ArrayList();
             trafficLight trafficLight1 = new trafficLight(1);
             trafficLight trafficLight2 = new trafficLight(2);
             trafficLight trafficLight3 = new trafficLight(3);
@@ -108,6 +108,7 @@ public class global_view extends Fragment {
             addMapPinActionListener();
         }
         if(Typology.equals("4 Lights")) {
+            trafficLightList = new ArrayList();
             trafficLight trafficLight1 = new trafficLight(1);
             trafficLight trafficLight2 = new trafficLight(2);
             trafficLight trafficLight3 = new trafficLight(3);
@@ -140,8 +141,8 @@ public class global_view extends Fragment {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 if (imageView.isReady()) {
-                    PointF sCoord = imageView.viewToSourceCoord(e.getX(), e.getY());
-                    int id = imageView.getPinIdByPoint(sCoord);
+                    PointF coord = imageView.viewToSourceCoord(e.getX(), e.getY());
+                    int id = imageView.getPinIdByPoint(coord);
                     if(id != -1)
                     {
                         for(int x = 0; x<trafficLightList.size(); x++)

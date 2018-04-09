@@ -12,8 +12,10 @@ import android.widget.Spinner;
 public class config extends Fragment {
 
     private configInterface mListener;
-    Button applyButton;
-    Spinner typologyOptions;
+    private Button applyButton;
+    private Spinner typologyOptions;
+    private Spinner modeOptions;
+    private Spinner distanceOptions;
 
     public config() {
     }
@@ -33,12 +35,20 @@ public class config extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_config, container, false);
         typologyOptions = view.findViewById(R.id.typologySpinner);
-
+        modeOptions = view.findViewById(R.id.modeSpinner);
+        distanceOptions = view.findViewById(R.id.distanceSpinner);
         applyButton = view.findViewById(R.id.applyButton);
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String typologyOptionsValue = typologyOptions.getSelectedItem().toString();
-                mListener.updateGlobal(typologyOptionsValue);
+                int distanceOptionsValue = Integer.parseInt(distanceOptions.getSelectedItem().toString());
+                String modeOptionsValue = modeOptions.getSelectedItem().toString();
+
+                mListener.updateGlobal(typologyOptionsValue, distanceOptionsValue, "","");
+                System.out.println(typologyOptionsValue);
+                System.out.println(distanceOptionsValue);
+                System.out.println(modeOptionsValue);
+
             }
         });
         return view;
@@ -62,7 +72,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(String t);
+        void updateGlobal(String typology, int distance, String synch, String mode);
 
     }
 }
