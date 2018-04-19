@@ -38,7 +38,7 @@ public class global_view extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_global_view, container, false);
         imageView = view.findViewById(R.id.imageView);
-        applyTypology("2 Lights");
+        applyTypology(2);
         return view;
     }
 
@@ -59,9 +59,9 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void applyTypology(String Typology)
+    public void applyTypology(int Typology)
     {
-        if(Typology.equals("2 Lights"))
+        if(Typology == 2)
         {
             trafficLightList = new ArrayList();
             trafficLight trafficLight1 = new trafficLight(1);
@@ -83,7 +83,7 @@ public class global_view extends Fragment {
 
 
         }
-        if(Typology.equals("3 Lights"))
+        if(Typology == 3)
         {
             trafficLightList = new ArrayList();
             trafficLight trafficLight1 = new trafficLight(1);
@@ -107,7 +107,7 @@ public class global_view extends Fragment {
             imageView.setPins(MapPins);
             addMapPinActionListener();
         }
-        if(Typology.equals("4 Lights")) {
+        if(Typology == 4) {
             trafficLightList = new ArrayList();
             trafficLight trafficLight1 = new trafficLight(1);
             trafficLight trafficLight2 = new trafficLight(2);

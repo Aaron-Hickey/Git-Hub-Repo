@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     private Fragment currentF;
     private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
-    private boolean monitorVisible = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 });
     }
 
-
     public void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_first_fragment:
@@ -107,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 swapFragment(globalF);
         }
 
-
       //  menuItem.setChecked(true);
        // setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
@@ -115,39 +113,18 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
 
     @Override
     public void returnToGlobal() {
-        global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
-        toggleMonitor();
+        swapFragment(globalF);
     }
 
     @Override
     public void updateMonitoring(trafficLight t) {
         monitoring f = (monitoring) fragmentManager.findFragmentByTag("monitorF");
         f.updateInfo(t);
-        toggleMonitor();
-    }
-
-    public void toggleMonitor()
-    {
-         if(monitorVisible == true)
-         {
-             fragmentManager.beginTransaction()
-                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                     .hide(monitorF)
-                     .commit();
-             monitorVisible = false;
-         }
-         else
-         {
-             fragmentManager.beginTransaction()
-                     .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                     .show(monitorF)
-                     .commit();
-             monitorVisible = true;
-         }
+        swapFragment(monitorF);
     }
 
     @Override
-    public void updateGlobal(String typology, int distance, String synch, String mode) {
+    public void updateGlobal(int typology, int distance, String synch, String mode) {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
         f.applyTypology(typology);
 

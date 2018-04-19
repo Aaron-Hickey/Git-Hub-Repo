@@ -39,6 +39,10 @@ public class monitoring extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_monitoring, container, false);
         displayWarning("opticalWarning");
+        displayWarning("lowBatteryWarning");
+        displayWarning("fallenWarning");
+        displayWarning("signalWarning");
+        displayWarning("desyncWarning");
         initVariables();
         disableLight(greenImage);
         disableLight(yellowImage);

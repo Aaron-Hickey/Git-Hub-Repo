@@ -52,8 +52,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_close" />
-                            <entry key="sourceFile" value="C:\Users\HAL 9000\Desktop\error.svg" />
+                            <entry key="outputName" value="ic_refresh_arrow" />
+                            <entry key="sourceFile" value="C:\Users\HAL 9000\Desktop\refresh-arrow.psd" />
                           </map>
                         </option>
                       </PersistentState>

@@ -220,6 +220,7 @@
             android:id="@+id/opticalWarning"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -231,7 +232,7 @@
 
             <TextView
                 android:id="@+id/textView12"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Optical Failure" />
         </LinearLayout>
@@ -240,6 +241,8 @@
             android:id="@+id/lowBatteryWarning"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -251,7 +254,7 @@
 
             <TextView
                 android:id="@+id/textView13"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Low Battery" />
         </LinearLayout>
@@ -260,6 +263,8 @@
             android:id="@+id/fallenWarning"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -271,15 +276,17 @@
 
             <TextView
                 android:id="@+id/textView14"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fallen" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/rangeWarning"
+            android:id="@+id/signalWarning"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -291,14 +298,16 @@
 
             <TextView
                 android:id="@+id/textView11"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Out of Range" />
+                android:text="Signal Lost" />
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/desyncWarning"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -309,10 +318,9 @@
                 android:src="@drawable/ic_warning_sign" />
 
             <TextView
-                android:id="@+id/textView7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="IOS" />
+                android:text="Cycle Desync" />
         </LinearLayout>
 
     </LinearLayout>
@@ -321,7 +329,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:paddingBottom="100dp"
+        android:paddingBottom="60dp"
         android:paddingLeft="100dp"
         android:paddingRight="100dp"
         android:paddingTop="100dp">

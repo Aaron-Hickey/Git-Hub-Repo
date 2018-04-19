@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#FF4081</color>
     <color name="monitor">#e3e3e3</color>
+    <color name="warning">#d71414</color>
 </resources>
