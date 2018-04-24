@@ -124,9 +124,9 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     }
 
     @Override
-    public void updateGlobal(int typology, int distance, String synch, String mode) {
+    public void updateGlobal(int typology, String mode, int distance) {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
-        f.applyTypology(typology);
+        f.createTrafficLights(typology, mode ,distance);
 
         swapFragment(globalF);
     }

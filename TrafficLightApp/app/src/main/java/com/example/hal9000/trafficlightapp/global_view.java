@@ -38,7 +38,7 @@ public class global_view extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_global_view, container, false);
         imageView = view.findViewById(R.id.imageView);
-        applyTypology(2);
+       // createTrafficLights(2, "Pendular", 100);
         return view;
     }
 
@@ -59,13 +59,17 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void applyTypology(int Typology)
+    public void createTrafficLights(int typology, String mode, int distance)
     {
-        if(Typology == 2)
+        if(typology == 2)
         {
             trafficLightList = new ArrayList();
-            trafficLight trafficLight1 = new trafficLight(1);
-            trafficLight trafficLight2 = new trafficLight(2);
+            for(int x = 1; x <= typology; x++ )
+            {
+                System.out.println(x);
+            }
+            trafficLight trafficLight1 = new trafficLight(1, "", "", ""+typology, mode, "", distance, "France", 100);
+            trafficLight trafficLight2 = new trafficLight(2, "", "", ""+typology, mode, "", distance, "France", 100);
 
             trafficLightList.add(trafficLight1);
             trafficLightList.add(trafficLight2);
@@ -81,14 +85,14 @@ public class global_view extends Fragment {
             imageView.setPins(MapPins);
             addMapPinActionListener();
 
-
         }
-        if(Typology == 3)
+        if(typology == 3)
         {
             trafficLightList = new ArrayList();
-            trafficLight trafficLight1 = new trafficLight(1);
-            trafficLight trafficLight2 = new trafficLight(2);
-            trafficLight trafficLight3 = new trafficLight(3);
+            trafficLight trafficLight1 = new trafficLight(1, "", "", ""+typology, mode, "", distance, "France", 100);
+            trafficLight trafficLight2 = new trafficLight(2, "", "", ""+typology, mode, "", distance, "France", 100);
+            trafficLight trafficLight3 = new trafficLight(3, "", "", ""+typology, mode, "", distance, "France", 100);
+
 
             trafficLightList.add(trafficLight1);
             trafficLightList.add(trafficLight2);
@@ -107,12 +111,13 @@ public class global_view extends Fragment {
             imageView.setPins(MapPins);
             addMapPinActionListener();
         }
-        if(Typology == 4) {
+        if(typology == 4) {
             trafficLightList = new ArrayList();
-            trafficLight trafficLight1 = new trafficLight(1);
-            trafficLight trafficLight2 = new trafficLight(2);
-            trafficLight trafficLight3 = new trafficLight(3);
-            trafficLight trafficLight4 = new trafficLight(4);
+            trafficLight trafficLight1 = new trafficLight(1, "", "", ""+typology, mode, "", distance, "France", 100);
+            trafficLight trafficLight2 = new trafficLight(2, "", "", ""+typology, mode, "", distance, "France", 100);
+            trafficLight trafficLight3 = new trafficLight(3, "", "", ""+typology, mode, "", distance, "France", 100);
+            trafficLight trafficLight4 = new trafficLight(4, "", "", ""+typology, mode, "", distance, "France", 100);
+
 
             trafficLightList.add(trafficLight1);
             trafficLightList.add(trafficLight2);

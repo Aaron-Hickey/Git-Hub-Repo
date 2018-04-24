@@ -123,7 +123,7 @@ public class config extends Fragment {
     void connectAdapter() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
-            System.out.println("no adapter found");
+            warningText.setText("No Adapter Found");
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
@@ -177,7 +177,7 @@ public class config extends Fragment {
         String modeOptionsValue = modeOptions.getSelectedItem().toString();
 
         if(valid) {
-            mListener.updateGlobal(typologyOptionsValue, distanceOptionsValue, "", "");
+            mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
             mmOutputStream.write(msg.getBytes());
             warningText.setText("");
@@ -204,8 +204,7 @@ public class config extends Fragment {
             distCode = "" + dist;
         }
 
-
-        return typo + "" + distCode + "" + modeCode;
+        return "C" + typo + "" + modeCode  + "" + distCode;
     }
 
     void closeBT() throws IOException {
@@ -234,7 +233,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(int typology, int distance, String synch, String mode);
+        void updateGlobal(int typology, String mode, int distance);
 
     }
 

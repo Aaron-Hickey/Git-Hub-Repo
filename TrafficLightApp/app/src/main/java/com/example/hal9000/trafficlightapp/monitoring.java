@@ -12,16 +12,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View view;
     private ImageView greenImage;
     private ImageView yellowImage;
     private ImageView redImage;
-    private TextView typologyText;
     private TextView idText;
+    private TextView stateText;
+    private TextView substateText;
+    private TextView typoText;
+    private TextView modeText;
+    private TextView densityText;
+    private TextView distanceText;
+    private TextView countryText;
+    private TextView batteryText;
+
     private Button backButton;
-    public monitoring() {}
+
+    public monitoring() {
+    }
 
     public static monitoring newInstance() {
         monitoring fragment = new monitoring();
@@ -57,25 +69,38 @@ public class monitoring extends Fragment {
         return view;
     }
 
-    public void initVariables()
-    {
+    public void initVariables() {
         greenImage = view.findViewById(R.id.greenLight);
         yellowImage = view.findViewById(R.id.yellowLight);
         redImage = view.findViewById(R.id.redLight);
-        typologyText = view.findViewById(R.id.typologyMonitor);
         idText = view.findViewById(R.id.idMonitor);
+        stateText = view.findViewById(R.id.stateMonitor);
+        substateText = view.findViewById(R.id.substateMonitor);
+        typoText = view.findViewById(R.id.typologyMonitor);
+        modeText = view.findViewById(R.id.modeMonitor);
+        densityText = view.findViewById(R.id.densityMonitor);
+        distanceText = view.findViewById(R.id.distanceMonitor);
+        countryText = view.findViewById(R.id.countryMonitor);
+        batteryText = view.findViewById(R.id.batteryMonitor);
     }
 
-    public void updateInfo(trafficLight t)
-    {
+    public void updateInfo(trafficLight t) {
         idText.setText(Integer.toString(t.getId()));
+        stateText.setText(t.getState());
+        substateText.setText(t.getSubstate());
+        typoText.setText(t.getTypology());
+        modeText.setText(t.getMode());
+        densityText.setText(t.getDensity());
+        distanceText.setText(Integer.toString(t.getDistance()));
+        countryText.setText(t.getCountry());
+        batteryText.setText(Integer.toString(t.getBattery()));
     }
-    public void disableLight(ImageView light)
-    {
+
+    public void disableLight(ImageView light) {
         light.setVisibility(View.INVISIBLE);
     }
-    public void enableLight(ImageView light)
-    {
+
+    public void enableLight(ImageView light) {
         light.setVisibility(View.VISIBLE);
     }
 
