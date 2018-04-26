@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -27,6 +29,8 @@ import java.util.UUID;
 
 public class config extends Fragment {
 
+    private String positiveResponse = "ok"; // response that the traffic light returns if configuration is successful
+
     private configInterface mListener;
     private Button applyButton;
     private Spinner typologyOptions;
@@ -35,6 +39,7 @@ public class config extends Fragment {
     private EditText distanceCustomOptions;
     private TextView warningText;
     private ImageButton refreshButton;
+    private ProgressBar responseProgress;
 
     private Spinner configDeviceList;
     private BluetoothAdapter mBluetoothAdapter;
@@ -45,6 +50,11 @@ public class config extends Fragment {
     private Thread workerThread;
     private byte[] readBuffer;
     private int readBufferPosition;
+    private String response;
+
+    private String typologyOptionsValue;
+    private String modeOptionsValue;
+    private int distanceOptionsValue;
 
     private boolean connected = false;
     volatile boolean stopWorker;
@@ -74,6 +84,7 @@ public class config extends Fragment {
         distanceCustomOptions = view.findViewById(R.id.distanceCustom);
         applyButton = view.findViewById(R.id.applyButton);
         warningText = view.findViewById(R.id.warningConfig);
+        responseProgress = view.findViewById(R.id.configLoading);
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
@@ -88,7 +99,7 @@ public class config extends Fragment {
                 if (connected == true) {
                     try {
                         sendData();
-                      //  closeBT();
+                        //  closeBT();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -148,43 +159,40 @@ public class config extends Fragment {
         mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
         mmSocket.connect();
         mmOutputStream = mmSocket.getOutputStream();
-        // mmInputStream = mmSocket.getInputStream();
-        //beginListenForData();
-       // System.out.println("bt open");
+        mmInputStream = mmSocket.getInputStream();
+        listenForResponse();
+        // System.out.println("bt open");
     }
 
     void sendData() throws IOException {
-        int typologyOptionsValue = Integer.parseInt(typologyOptions.getSelectedItem().toString());
-        int distanceOptionsValue = 100;
+        typologyOptionsValue = typologyOptions.getSelectedItem().toString();
+        distanceOptionsValue = 100;
         boolean valid = true;
         if (!TextUtils.isEmpty(distanceCustomOptions.getText().toString())) {
             int temp = Integer.parseInt(distanceCustomOptions.getText().toString());
-            if(temp < 100 || temp > 3000)
-            {
+            if (temp < 100 || temp > 3000) {
                 warningText.setText("Distance must be between 100 and 3000");
                 valid = false;
-            }
-            else
-            {
+            } else {
                 distanceOptionsValue = temp;
             }
-        }
-        else
-        {
+        } else {
             distanceOptionsValue = Integer.parseInt(distanceOptions.getSelectedItem().toString());
         }
 
-        String modeOptionsValue = modeOptions.getSelectedItem().toString();
+        modeOptionsValue = modeOptions.getSelectedItem().toString();
 
-        if(valid) {
-            mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+        if (valid) {
+            responseProgress.setVisibility(View.VISIBLE);
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
             mmOutputStream.write(msg.getBytes());
-            warningText.setText("");
+            listenForResponse();
         }
     }
 
-    String createMessage(int typo, String mode, int dist) {
+    String createMessage(String typo, String mode, int dist) {
+        int typoCode = typologyOptions.getSelectedItemPosition() + 1;
+
         String modeCode = "0";
         if (mode.equals("Pendular")) {
             modeCode = "0";
@@ -195,22 +203,70 @@ public class config extends Fragment {
         }
 
         String distCode;
-        if(dist < 1000)
-        {
-            distCode = "0"+dist;
-        }
-        else
-        {
-            distCode = "" + dist;
+        if (dist < 1000) {
+            distCode = "0" + (dist / 100); // 01 = 100, 02 = 200 etc.
+        } else {
+            distCode = "" + (dist / 100); // 10 = 1000, 11 = 1100 etc.
         }
 
-        return "C" + typo + "" + modeCode  + "" + distCode;
+        return "Config:" + typoCode + "" + modeCode + "" + distCode;
     }
+
+    private void listenForResponse() {
+        final Handler handler = new Handler();
+        //final byte delimiter = 10; //This is the ASCII code for a newline character
+        response = "No response";
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
+                        int bytesAvailable = mmInputStream.available();
+                        if (bytesAvailable > 0) {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            mmInputStream.read(packetBytes);
+
+                            byte[] encodedBytes = new byte[readBufferPosition];
+                            System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                            final String data = new String(packetBytes, "US-ASCII");
+                            readBufferPosition = 0;
+
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    // dataPanel.append(data);
+                                    System.out.println(data);
+                                    if (data.equals(positiveResponse)) {
+                                        mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+                                        warningText.setText("");
+                                        responseProgress.setVisibility(View.INVISIBLE);
+                                        try {
+                                            closeBT();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            });
+                            Thread.sleep(100);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        workerThread.start();
+    }
+
 
     void closeBT() throws IOException {
         stopWorker = true;
         mmOutputStream.close();
-       // mmInputStream.close();
+        mmInputStream.close();
         mmSocket.close();
         connected = false;
     }
@@ -233,7 +289,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(int typology, String mode, int distance);
+        void updateGlobal(String typology, String mode, int distance);
 
     }
 

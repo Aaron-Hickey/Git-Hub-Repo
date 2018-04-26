@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.davemorrissey.labs.subscaleview.ImageSource;
+
 import java.util.ArrayList;
 
 
@@ -20,7 +22,8 @@ public class global_view extends Fragment {
     private View view;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
 
-    public global_view() {}
+    public global_view() {
+    }
 
     public static global_view newInstance() {
         global_view fragment = new global_view();
@@ -38,7 +41,7 @@ public class global_view extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_global_view, container, false);
         imageView = view.findViewById(R.id.imageView);
-       // createTrafficLights(2, "Pendular", 100);
+        // createTrafficLights(2, "Pendular", 100);
         return view;
     }
 
@@ -59,101 +62,60 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void createTrafficLights(int typology, String mode, int distance)
-    {
-        if(typology == 2)
+    public void createTrafficLights(String typology, String mode, int distance) {
+        int numberOfLights;
+        if(typology.equals("2F P Turning"))
         {
-            trafficLightList = new ArrayList();
-            for(int x = 1; x <= typology; x++ )
-            {
-                System.out.println(x);
-            }
-            trafficLight trafficLight1 = new trafficLight(1, "", "", ""+typology, mode, "", distance, "France", 100);
-            trafficLight trafficLight2 = new trafficLight(2, "", "", ""+typology, mode, "", distance, "France", 100);
-
-            trafficLightList.add(trafficLight1);
-            trafficLightList.add(trafficLight2);
-
-            imageView.setImage(ImageSource.asset("road2.png"));
-
-            MapPin mapPinA = new MapPin(2500f, 6500f, 1);
-            MapPin mapPinB = new MapPin(6000f, 1500f, 2);
-
-            ArrayList<MapPin> MapPins = new ArrayList();
-            MapPins.add(mapPinA);
-            MapPins.add(mapPinB);
-            imageView.setPins(MapPins);
-            addMapPinActionListener();
-
+            numberOfLights = 2;
         }
-        if(typology == 3)
+        else if(typology.equals("3F P Turning") || typology.equals("3F P PR SE"))
         {
-            trafficLightList = new ArrayList();
-            trafficLight trafficLight1 = new trafficLight(1, "", "", ""+typology, mode, "", distance, "France", 100);
-            trafficLight trafficLight2 = new trafficLight(2, "", "", ""+typology, mode, "", distance, "France", 100);
-            trafficLight trafficLight3 = new trafficLight(3, "", "", ""+typology, mode, "", distance, "France", 100);
-
-
-            trafficLightList.add(trafficLight1);
-            trafficLightList.add(trafficLight2);
-            trafficLightList.add(trafficLight3);
-
-            imageView.setImage(ImageSource.asset("road3.png"));
-
-            MapPin mapPinA = new MapPin(2500f, 6500f, 1);
-            MapPin mapPinB = new MapPin(6000f, 1500f, 2);
-            MapPin mapPinC = new MapPin(6000f, 6500f, 3);
-
-            ArrayList<MapPin> MapPins = new ArrayList();
-            MapPins.add(mapPinA);
-            MapPins.add(mapPinB);
-            MapPins.add(mapPinC);
-            imageView.setPins(MapPins);
-            addMapPinActionListener();
+            numberOfLights = 3;
         }
-        if(typology == 4) {
-            trafficLightList = new ArrayList();
-            trafficLight trafficLight1 = new trafficLight(1, "", "", ""+typology, mode, "", distance, "France", 100);
-            trafficLight trafficLight2 = new trafficLight(2, "", "", ""+typology, mode, "", distance, "France", 100);
-            trafficLight trafficLight3 = new trafficLight(3, "", "", ""+typology, mode, "", distance, "France", 100);
-            trafficLight trafficLight4 = new trafficLight(4, "", "", ""+typology, mode, "", distance, "France", 100);
-
-
-            trafficLightList.add(trafficLight1);
-            trafficLightList.add(trafficLight2);
-            trafficLightList.add(trafficLight3);
-            trafficLightList.add(trafficLight4);
-
-            imageView.setImage(ImageSource.asset("road4.png"));
-
-            MapPin mapPinA = new MapPin(2500f, 6500f, 1);
-            MapPin mapPinB = new MapPin(6000f, 1500f, 2);
-            MapPin mapPinC = new MapPin(6000f, 6500f, 3);
-            MapPin mapPinD = new MapPin(2500f, 1500f, 4);
-
-            ArrayList<MapPin> MapPins = new ArrayList();
-            MapPins.add(mapPinA);
-            MapPins.add(mapPinB);
-            MapPins.add(mapPinC);
-            MapPins.add(mapPinD);
-            imageView.setPins(MapPins);
-            addMapPinActionListener();
+        else
+        {
+            numberOfLights = 4;
         }
+
+        trafficLightList = new ArrayList();
+        ArrayList<MapPin> pinHolder = new ArrayList(); // temporary array to find mapPins by iteration
+        MapPin mapPinA = new MapPin(2500f, 6500f, 1);
+        MapPin mapPinB = new MapPin(6000f, 1500f, 2);
+        MapPin mapPinC = new MapPin(6000f, 6500f, 3);
+        MapPin mapPinD = new MapPin(2500f, 1500f, 4);
+
+        pinHolder.add(mapPinA);
+        pinHolder.add(mapPinB);
+        pinHolder.add(mapPinC);
+        pinHolder.add(mapPinD);
+
+        ArrayList<String> stringHolder = new ArrayList();
+        stringHolder.add("road2.png");
+        stringHolder.add("road3.png");
+        stringHolder.add("road4.png");
+
+        ArrayList<MapPin> MapPins = new ArrayList();
+
+        for (int x = 0; x < numberOfLights; x++) {
+            System.out.println(x);
+            trafficLightList.add(new trafficLight(x + 1, "", "", "" + typology, mode, "", distance, "France", 100));
+            MapPins.add(pinHolder.get(x));
+        }
+        imageView.setImage(ImageSource.asset(stringHolder.get(numberOfLights - 2)));
+        imageView.setPins(MapPins);
+        addMapPinActionListener();
     }
-    public boolean addMapPinActionListener()
-    {
+
+    public boolean addMapPinActionListener() {
         final GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 if (imageView.isReady()) {
                     PointF coord = imageView.viewToSourceCoord(e.getX(), e.getY());
                     int id = imageView.getPinIdByPoint(coord);
-                    if(id != -1)
-                    {
-                        for(int x = 0; x<trafficLightList.size(); x++)
-                        {
-                            if(id == trafficLightList.get(x).getId())
-                            {
+                    if (id != -1) {
+                        for (int x = 0; x < trafficLightList.size(); x++) {
+                            if (id == trafficLightList.get(x).getId()) {
                                 mListener.updateMonitoring(trafficLightList.get(x));
                             }
                         }
@@ -170,6 +132,7 @@ public class global_view extends Fragment {
         });
         return false;
     }
+
     public interface globalInterface {
         void updateMonitoring(trafficLight t);
     }

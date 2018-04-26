@@ -7,9 +7,14 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="typology_array">
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
+        <item>2F P Turning</item>
+        <item>3F P Turning</item>
+        <item>3F P PR SE</item>
+        <item>4F P Turning</item>
+        <item>4F PR SE A A</item>
+        <item>4F PR SE S S</item>
+        <item>4F PR SE A S</item>
+        <item>4F PR SE S A</item>
     </string-array>
 
     <string-array name="distance_array">
