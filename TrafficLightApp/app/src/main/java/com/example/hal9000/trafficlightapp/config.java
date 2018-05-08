@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +51,6 @@ public class config extends Fragment {
     private Thread workerThread;
     private byte[] readBuffer;
     private int readBufferPosition;
-    private String response;
 
     private String typologyOptionsValue;
     private String modeOptionsValue;
@@ -58,6 +58,8 @@ public class config extends Fragment {
 
     private boolean connected = false;
     volatile boolean stopWorker;
+
+    private bluetoothFunctions bf;
 
     public config() {
     }
@@ -76,8 +78,13 @@ public class config extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_config, container, false);
-        configDeviceList = view.findViewById(R.id.configDeviceList);
+        try {
+            bf = new bluetoothFunctions();
+        } catch (IOException e) {
+            System.out.println("Failed to create bluetooth object");
+        }
 
+        configDeviceList = view.findViewById(R.id.configDeviceList);
         typologyOptions = view.findViewById(R.id.typologySpinner);
         modeOptions = view.findViewById(R.id.modeSpinner);
         distanceOptions = view.findViewById(R.id.distanceSpinner);
@@ -85,22 +92,18 @@ public class config extends Fragment {
         applyButton = view.findViewById(R.id.applyButton);
         warningText = view.findViewById(R.id.warningConfig);
         responseProgress = view.findViewById(R.id.configLoading);
+
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                try {
-                    openBT();
-                    connected = true;
-                    warningText.setText("");
-                } catch (IOException e) {
-                    if (connected == false) {
-                        warningText.setText("Failed to connect");
-                    }
-                }
+                openBT();
+                connected = true;
+                warningText.setText("");
                 if (connected == true) {
                     try {
                         sendData();
-                        //  closeBT();
                     } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
@@ -113,14 +116,13 @@ public class config extends Fragment {
                 displayDevices();
             }
         });
-        connectAdapter();
         displayDevices();
         return view;
     }
 
     void displayDevices() {
         ArrayList<String> foundDevices = new ArrayList<>();
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        Set<BluetoothDevice> pairedDevices = bf.getDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 foundDevices.add(device.getName().toString());
@@ -131,40 +133,13 @@ public class config extends Fragment {
         }
     }
 
-    void connectAdapter() {
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
-            warningText.setText("No Adapter Found");
-        }
+    void openBT() {
+        String deviceName = configDeviceList.getSelectedItem().toString();
+        bf.connectToDevice(deviceName);
 
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBluetooth, 0);
-        }
     }
 
-    void openBT() throws IOException {
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-
-                String deviceName = configDeviceList.getSelectedItem().toString();
-                if (device.getName().equals(deviceName)) {
-                    mmDevice = device;
-                    break;
-                }
-            }
-        }
-        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
-        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
-        mmSocket.connect();
-        mmOutputStream = mmSocket.getOutputStream();
-        mmInputStream = mmSocket.getInputStream();
-        listenForResponse();
-        // System.out.println("bt open");
-    }
-
-    void sendData() throws IOException {
+    void sendData() throws IOException, InterruptedException {
         typologyOptionsValue = typologyOptions.getSelectedItem().toString();
         distanceOptionsValue = 100;
         boolean valid = true;
@@ -183,9 +158,20 @@ public class config extends Fragment {
         modeOptionsValue = modeOptions.getSelectedItem().toString();
 
         if (valid) {
-            responseProgress.setVisibility(View.VISIBLE);
+
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
-            mmOutputStream.write(msg.getBytes());
+            boolean sendStatus = bf.sendData(msg);
+            if(sendStatus == true)
+            {
+                responseProgress.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                warningText.setText("Message Failed To Send");
+            }
+            //System.out.println(bf.listenForResponse());
+
+            //mmOutputStream.write(msg.getBytes());
             listenForResponse();
         }
     }
@@ -213,63 +199,89 @@ public class config extends Fragment {
     }
 
     private void listenForResponse() {
-        final Handler handler = new Handler();
-        //final byte delimiter = 10; //This is the ASCII code for a newline character
-        response = "No response";
-        stopWorker = false;
-        readBufferPosition = 0;
-        readBuffer = new byte[1024];
-        workerThread = new Thread(new Runnable() {
-            public void run() {
-                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        int bytesAvailable = mmInputStream.available();
-                        if (bytesAvailable > 0) {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            mmInputStream.read(packetBytes);
+          Toast.makeText(getActivity(), "Waiting for response...",
+                  Toast.LENGTH_LONG).show();
+         final Handler handler = new Handler();
+          //final byte delimiter = 10; //This is the ASCII code for a newline character
+          stopWorker = false;
+       //   readBufferPosition = 0;
+       //   readBuffer = new byte[1024];
+          workerThread = new Thread(new Runnable() {
+              public void run() {
+                  while (!Thread.currentThread().isInterrupted() && !stopWorker) {
 
-                            byte[] encodedBytes = new byte[readBufferPosition];
-                            System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                            final String data = new String(packetBytes, "US-ASCII");
-                            readBufferPosition = 0;
+                      try {
 
-                            handler.post(new Runnable() {
-                                public void run() {
-                                    // dataPanel.append(data);
-                                    System.out.println(data);
-                                    if (data.equals(positiveResponse)) {
-                                        mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
-                                        warningText.setText("");
-                                        responseProgress.setVisibility(View.INVISIBLE);
-                                        try {
-                                            closeBT();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            });
-                            Thread.sleep(100);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        workerThread.start();
-    }
+                        /*  int bytesAvailable = mmInputStream.available();
+                          if (bytesAvailable > 0) {
+                              byte[] packetBytes = new byte[bytesAvailable];
+                              mmInputStream.read(packetBytes);
+
+                              byte[] encodedBytes = new byte[readBufferPosition];
+                              System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                              final String data = new String(packetBytes, "US-ASCII");
+                              readBufferPosition = 0;
+
+                              handler.post(new Runnable() {
+                                  public void run() {
+                                      System.out.println(data);
+                                      if (data.equals(positiveResponse)) {
+                                          mListener.updateGlobal(mmDevice, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+                                          warningText.setText("");
+                                          responseProgress.setVisibility(View.INVISIBLE);
+                                          try {
+                                              closeBT();
+                                          } catch (IOException e) {
+                                              e.printStackTrace();
+                                          }
+                                      }
+
+                                  }
+                              });
+                              Thread.sleep(100);
+
+                          }
+                            */
+                        final String data = bf.listenForResponse();
+                          handler.post(new Runnable() {
+                              public void run() {
+                                  System.out.println(data);
+                                  if (data.equals(positiveResponse)) {
+                                      mListener.updateGlobal(mmDevice, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+                                      warningText.setText("");
+                                      responseProgress.setVisibility(View.INVISIBLE);
+                                      stopWorker = true;
+                                      try {
+                                          bf.closeBT();
+                                      } catch (IOException e) {
+                                          e.printStackTrace();
+                                      }
+                                  }
+
+                              }
+                          });
+                          Thread.sleep(100);
 
 
-    void closeBT() throws IOException {
-        stopWorker = true;
-        mmOutputStream.close();
-        mmInputStream.close();
-        mmSocket.close();
-        connected = false;
-    }
+                      } catch (IOException e) {
+                          e.printStackTrace();
+                      } catch (InterruptedException e) {
+                          e.printStackTrace();
+                      }
+                  }
+              }
+          });
+          workerThread.start();
+      }
+
+
+     /* void closeBT() throws IOException {
+          stopWorker = true;
+          mmOutputStream.close();
+          mmInputStream.close();
+          mmSocket.close();
+          connected = false;
+      }*/
 
     @Override
     public void onAttach(Context context) {
@@ -289,7 +301,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(String typology, String mode, int distance);
+        void updateGlobal(BluetoothDevice bluetoothDevice, String typology, String mode, int distance);
 
     }
 

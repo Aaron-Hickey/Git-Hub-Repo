@@ -3,15 +3,15 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_first_fragment"
+            android:id="@+id/nav_Global"
             android:icon="@drawable/ic_global"
             android:title="Global View" />
         <item
-            android:id="@+id/nav_second_fragment"
+            android:id="@+id/nav_Config"
             android:icon="@drawable/ic_config"
             android:title="Config" />
         <item
-            android:id="@+id/nav_third_fragment"
+            android:id="@+id/nav_Monitor"
             android:icon="@drawable/ic_monitoring"
             android:title="Monitoring" />
         <item

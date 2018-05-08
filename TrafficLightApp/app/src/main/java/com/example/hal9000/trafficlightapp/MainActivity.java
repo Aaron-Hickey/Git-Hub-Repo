@@ -1,5 +1,6 @@
 package com.example.hal9000.trafficlightapp;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -90,13 +91,13 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
 
     public void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.nav_first_fragment:
+            case R.id.nav_Global:
                 swapFragment(globalF);
                 break;
-            case R.id.nav_second_fragment:
+            case R.id.nav_Config:
                 swapFragment(configF);
                 break;
-            case R.id.nav_third_fragment:
+            case R.id.nav_Monitor:
                 swapFragment(monitorF);
                 break;
             case R.id.nav_bluetooth_console:
@@ -106,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 swapFragment(globalF);
         }
 
-      //  menuItem.setChecked(true);
-       // setTitle(menuItem.getTitle());
+        menuItem.setChecked(true);
+        setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
 
@@ -124,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     }
 
     @Override
-    public void updateGlobal(String typology, String mode, int distance) {
+    public void updateGlobal(BluetoothDevice bluetoothDevice, String typology, String mode, int distance) {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
-        f.createTrafficLights(typology, mode ,distance);
+        f.createTrafficLights(bluetoothDevice, typology, mode ,distance);
 
         swapFragment(globalF);
     }
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     {
         if(currentF != n)
         {
+
             fragmentManager.beginTransaction()
                     .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                     .hide(currentF)
