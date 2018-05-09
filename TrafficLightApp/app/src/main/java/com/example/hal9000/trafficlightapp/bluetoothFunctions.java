@@ -26,6 +26,7 @@ public class bluetoothFunctions {
     private int readBufferPosition;
     private String response;
     volatile boolean stopWorker;
+    private boolean connected = false;
 
 
     public bluetoothFunctions() throws IOException {
@@ -41,7 +42,8 @@ public class bluetoothFunctions {
         // openConnection();
     }
 
-    public void connectToDevice(String s) {
+    public boolean connectToDevice(String s) {
+        boolean res = false;
         Set<BluetoothDevice> pairedDevices = getDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -49,11 +51,13 @@ public class bluetoothFunctions {
 
                 if (device.getName().equals(s)) {
                     this.device = device;
-                    openConnection();
+                    connected = openConnection();
+
                     break;
                 }
             }
         }
+        return res;
     }
 
     public Set<BluetoothDevice> getDevices() {
@@ -81,46 +85,50 @@ public class bluetoothFunctions {
         }
     }
 
-    public boolean sendData(String s) throws IOException, InterruptedException {
+    public boolean sendData(String s) throws IOException {
         if (outputStream != null) {
             outputStream.write(s.getBytes());
-            listenForResponse();
+            //   listenForResponse();
             return true;
         } else {
-            System.out.println("No output stream");
+            System.out.println("Send message failed");
             return false;
         }
     }
 
 
-    public String listenForResponse() throws InterruptedException, IOException {
-        int bytesAvailable = inputStream.available();
+    public String listenForResponse() throws IOException {
         String noData = "noData";
-        readBufferPosition = 0;
-        readBuffer = new byte[1024];
-        if (bytesAvailable > 0) {
-            byte[] packetBytes = new byte[bytesAvailable];
-            inputStream.read(packetBytes);
-
-            byte[] encodedBytes = new byte[readBufferPosition];
-            System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-            final String data = new String(packetBytes, "US-ASCII");
+        if (connected) {
+            int bytesAvailable = inputStream.available();
             readBufferPosition = 0;
+            readBuffer = new byte[1024];
+            if (bytesAvailable > 0) {
+                byte[] packetBytes = new byte[bytesAvailable];
+                inputStream.read(packetBytes);
+
+                byte[] encodedBytes = new byte[readBufferPosition];
+                System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                final String data = new String(packetBytes, "US-ASCII");
+                readBufferPosition = 0;
 
 
-            System.out.println(data);
-            return data;
+                System.out.println(data);
+                return data;
 
+            }
         }
+
         return noData;
     }
+
     public void closeBT() throws IOException {
-          stopWorker = true;
-          outputStream.close();
-          inputStream.close();
-          socket.close();
-          //connected = false;
-      }
+        stopWorker = true;
+        outputStream.close();
+        inputStream.close();
+        socket.close();
+        connected = false;
+    }
 }
 
 

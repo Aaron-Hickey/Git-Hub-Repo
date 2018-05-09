@@ -96,17 +96,13 @@ public class config extends Fragment {
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 openBT();
-                connected = true;
                 warningText.setText("");
-                if (connected == true) {
                     try {
                         sendData();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
-                }
+
             }
         });
 
@@ -139,7 +135,7 @@ public class config extends Fragment {
 
     }
 
-    void sendData() throws IOException, InterruptedException {
+    void sendData() throws IOException {
         typologyOptionsValue = typologyOptions.getSelectedItem().toString();
         distanceOptionsValue = 100;
         boolean valid = true;
