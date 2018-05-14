@@ -79,7 +79,7 @@ public class global_view extends Fragment {
 
         Toast.makeText(getActivity(), bluetoothDevice, Toast.LENGTH_LONG).show();
 
-        bf = new bluetoothFunctions();
+        bf = bluetoothFunctions.getInstance();
         bf.connectToDevice(bluetoothDevice);
         bf.sendData("Global:");
 

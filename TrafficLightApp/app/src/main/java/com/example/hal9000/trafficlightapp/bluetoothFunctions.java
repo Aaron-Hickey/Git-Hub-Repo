@@ -23,14 +23,26 @@ public class bluetoothFunctions {
     private String response;
     volatile boolean stopWorker;
     private boolean connected = false;
+    private boolean hasAdapter = false;
 
-
+    private static final bluetoothFunctions INSTANCE = new bluetoothFunctions();
     public bluetoothFunctions() {
 
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null) {
-            System.out.println("No Adapter Found");
+    }
+    public static bluetoothFunctions getInstance()
+    {
+        return INSTANCE;
+    }
+
+    public void connectAdapter()
+    {
+        if(hasAdapter == false) {
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (bluetoothAdapter == null) {
+                System.out.println("No Adapter Found");
+            }
         }
+
 
        /* if (!bluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -38,6 +50,7 @@ public class bluetoothFunctions {
     }
 
     public boolean connectToDevice(String s) throws IOException {
+        connectAdapter();
         if (connected) {
             closeBT();
         }
@@ -59,6 +72,7 @@ public class bluetoothFunctions {
     }
 
     public Set<BluetoothDevice> getDevices() {
+        connectAdapter();
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         return pairedDevices;
     }
@@ -124,9 +138,18 @@ public class bluetoothFunctions {
 
     public void closeBT() throws IOException {
         stopWorker = true;
-        outputStream.close();
-        inputStream.close();
-        socket.close();
+        if(outputStream!=null)
+        {
+            outputStream.close();
+        }
+        if(inputStream!=null)
+        {
+            inputStream.close();
+        }
+        if(socket!=null)
+        {
+            socket.close();
+        }
         connected = false;
     }
 }

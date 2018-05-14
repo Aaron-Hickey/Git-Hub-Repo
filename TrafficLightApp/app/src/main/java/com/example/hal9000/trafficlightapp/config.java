@@ -3,6 +3,7 @@ package com.example.hal9000.trafficlightapp;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -52,7 +53,7 @@ public class config extends Fragment {
     private boolean connected = false;
     volatile boolean stopWorker;
     private bluetoothFunctions bf;
-
+    private int time;
     public config() {
     }
 
@@ -71,7 +72,7 @@ public class config extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_config, container, false);
 
-        bf = new bluetoothFunctions();
+        bf = bluetoothFunctions.getInstance();
 
         configDeviceList = view.findViewById(R.id.configDeviceList);
         typologyOptions = view.findViewById(R.id.typologySpinner);
@@ -194,14 +195,30 @@ public class config extends Fragment {
         Toast.makeText(getActivity(), "Waiting for response...", Toast.LENGTH_LONG).show();
         stopWorker = false;
         final Handler handler = new Handler();
+        time = 100;
         workerThread = new Thread(new Runnable() {
             public void run() {
+
                 while (!Thread.currentThread().isInterrupted() && !stopWorker) {
 
                     try {
                         final String data = bf.listenForResponse();
                         handler.post(new Runnable() {
                             public void run() {
+                                System.out.println(""+time);
+                                time--;
+                                if(time<=0)
+                                {
+
+                                    Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
+                                    stopWorker = true;
+                                    responseProgress.setVisibility(View.INVISIBLE);
+                                    try {
+                                        bf.closeBT();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                                 System.out.println(data);
                                 if (data.equals(positiveResponse)) {
                                     try {
@@ -212,7 +229,7 @@ public class config extends Fragment {
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
-                                    
+
                                 } else if (data.equals(negativeResponse)) {
                                     Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
                                     responseProgress.setVisibility(View.INVISIBLE);
