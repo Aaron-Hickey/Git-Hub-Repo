@@ -30,6 +30,8 @@ public class config extends Fragment {
     private String positiveResponse = "ok"; // response that the traffic light returns if configuration is successful
     private String negativeResponse = "no";
 
+    private String deviceName;
+
     private configInterface mListener;
     private Button applyButton;
     private Spinner typologyOptions;
@@ -39,21 +41,16 @@ public class config extends Fragment {
     private TextView warningText;
     private ImageButton refreshButton;
     private ProgressBar responseProgress;
-
     private Spinner configDeviceList;
-
-    private BluetoothDevice device;
-
-    private Thread workerThread;
-
-
     private String typologyOptionsValue;
     private String modeOptionsValue;
     private int distanceOptionsValue;
 
+    private BluetoothDevice device;
+
+    private Thread workerThread;
     private boolean connected = false;
     volatile boolean stopWorker;
-
     private bluetoothFunctions bf;
 
     public config() {
@@ -134,7 +131,7 @@ public class config extends Fragment {
     }
 
     private boolean openBT() throws IOException {
-        String deviceName = configDeviceList.getSelectedItem().toString();
+        deviceName = configDeviceList.getSelectedItem().toString();
         return bf.connectToDevice(deviceName);
 
     }
@@ -207,14 +204,15 @@ public class config extends Fragment {
                             public void run() {
                                 System.out.println(data);
                                 if (data.equals(positiveResponse)) {
-                                    mListener.updateGlobal(device, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
-                                    responseProgress.setVisibility(View.INVISIBLE);
-                                    stopWorker = true;
                                     try {
                                         bf.closeBT();
+                                        mListener.updateGlobal(deviceName, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+                                        responseProgress.setVisibility(View.INVISIBLE);
+                                        stopWorker = true;
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
+                                    
                                 } else if (data.equals(negativeResponse)) {
                                     Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
                                     responseProgress.setVisibility(View.INVISIBLE);
@@ -257,7 +255,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(BluetoothDevice bluetoothDevice, String typology, String mode, int distance);
+        void updateGlobal(String bluetoothDevice, String typology, String mode, int distance) throws IOException;
 
     }
 }

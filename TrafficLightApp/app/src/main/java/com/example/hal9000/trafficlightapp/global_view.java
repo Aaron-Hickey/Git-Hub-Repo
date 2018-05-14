@@ -33,6 +33,7 @@ public class global_view extends Fragment {
     private PinView imageView;
     private View view;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
+    private bluetoothFunctions bf;
 
     public global_view() {
     }
@@ -74,9 +75,13 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void createTrafficLights(BluetoothDevice bluetoothDevice, String typology, String mode, int distance) {
+    public void createTrafficLights(String bluetoothDevice, String typology, String mode, int distance) throws IOException {
 
+        Toast.makeText(getActivity(), bluetoothDevice, Toast.LENGTH_LONG).show();
 
+        bf = new bluetoothFunctions();
+        bf.connectToDevice(bluetoothDevice);
+        bf.sendData("Global:");
 
         int numberOfLights;
         if(typology.equals("2F P Turning"))

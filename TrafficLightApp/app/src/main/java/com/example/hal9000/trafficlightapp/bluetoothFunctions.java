@@ -38,6 +38,9 @@ public class bluetoothFunctions {
     }
 
     public boolean connectToDevice(String s) throws IOException {
+        if (connected) {
+            closeBT();
+        }
         boolean res = false;
         Set<BluetoothDevice> pairedDevices = getDevices();
         if (pairedDevices.size() > 0) {
@@ -85,7 +88,10 @@ public class bluetoothFunctions {
 
     public boolean sendData(String s) throws IOException {
         if (outputStream != null) {
+
             outputStream.write(s.getBytes());
+            System.out.println("Send Data:"+ s);
+
             //   listenForResponse();
             return true;
         } else {

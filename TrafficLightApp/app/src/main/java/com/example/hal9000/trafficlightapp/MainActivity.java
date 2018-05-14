@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener, global_view.globalInterface, monitoring.OnFragmentInteractionListener, config.configInterface {
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     }
 
     @Override
-    public void updateGlobal(BluetoothDevice bluetoothDevice, String typology, String mode, int distance) {
+    public void updateGlobal(String bluetoothDevice, String typology, String mode, int distance) throws IOException {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
         f.createTrafficLights(bluetoothDevice, typology, mode ,distance);
 
