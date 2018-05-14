@@ -1,10 +1,7 @@
 package com.example.hal9000.trafficlightapp;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -31,6 +28,7 @@ import java.util.UUID;
 public class config extends Fragment {
 
     private String positiveResponse = "ok"; // response that the traffic light returns if configuration is successful
+    private String negativeResponse = "no";
 
     private configInterface mListener;
     private Button applyButton;
@@ -43,14 +41,11 @@ public class config extends Fragment {
     private ProgressBar responseProgress;
 
     private Spinner configDeviceList;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothSocket mmSocket;
-    private BluetoothDevice mmDevice;
-    private OutputStream mmOutputStream;
-    private InputStream mmInputStream;
+
+    private BluetoothDevice device;
+
     private Thread workerThread;
-    private byte[] readBuffer;
-    private int readBufferPosition;
+
 
     private String typologyOptionsValue;
     private String modeOptionsValue;
@@ -78,11 +73,8 @@ public class config extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_config, container, false);
-        try {
-            bf = new bluetoothFunctions();
-        } catch (IOException e) {
-            System.out.println("Failed to create bluetooth object");
-        }
+
+        bf = new bluetoothFunctions();
 
         configDeviceList = view.findViewById(R.id.configDeviceList);
         typologyOptions = view.findViewById(R.id.typologySpinner);
@@ -95,14 +87,26 @@ public class config extends Fragment {
 
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                openBT();
-                warningText.setText("");
+                stopWorker = true;
+                boolean open = false;
+                try {
+                    open = openBT();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(open == true)
+                {
+                    warningText.setText("");
                     try {
                         sendData();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "Failed to open Bluetooth", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -116,7 +120,7 @@ public class config extends Fragment {
         return view;
     }
 
-    void displayDevices() {
+    private void displayDevices() {
         ArrayList<String> foundDevices = new ArrayList<>();
         Set<BluetoothDevice> pairedDevices = bf.getDevices();
         if (pairedDevices.size() > 0) {
@@ -129,20 +133,20 @@ public class config extends Fragment {
         }
     }
 
-    void openBT() {
+    private boolean openBT() throws IOException {
         String deviceName = configDeviceList.getSelectedItem().toString();
-        bf.connectToDevice(deviceName);
+        return bf.connectToDevice(deviceName);
 
     }
 
-    void sendData() throws IOException {
+    private void sendData() throws IOException {
         typologyOptionsValue = typologyOptions.getSelectedItem().toString();
         distanceOptionsValue = 100;
         boolean valid = true;
         if (!TextUtils.isEmpty(distanceCustomOptions.getText().toString())) {
             int temp = Integer.parseInt(distanceCustomOptions.getText().toString());
             if (temp < 100 || temp > 3000) {
-                warningText.setText("Distance must be between 100 and 3000");
+                Toast.makeText(getActivity(), "Distance must be between 100 and 3000", Toast.LENGTH_LONG).show();
                 valid = false;
             } else {
                 distanceOptionsValue = temp;
@@ -157,22 +161,17 @@ public class config extends Fragment {
 
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
             boolean sendStatus = bf.sendData(msg);
-            if(sendStatus == true)
-            {
+            if (sendStatus == true) {
                 responseProgress.setVisibility(View.VISIBLE);
+            } else {
+                Toast.makeText(getActivity(), "Message Failed To Send", Toast.LENGTH_LONG).show();
             }
-            else
-            {
-                warningText.setText("Message Failed To Send");
-            }
-            //System.out.println(bf.listenForResponse());
 
-            //mmOutputStream.write(msg.getBytes());
             listenForResponse();
         }
     }
 
-    String createMessage(String typo, String mode, int dist) {
+    private String createMessage(String typo, String mode, int dist) {
         int typoCode = typologyOptions.getSelectedItemPosition() + 1;
 
         String modeCode = "0";
@@ -195,89 +194,50 @@ public class config extends Fragment {
     }
 
     private void listenForResponse() {
-          Toast.makeText(getActivity(), "Waiting for response...",
-                  Toast.LENGTH_LONG).show();
-         final Handler handler = new Handler();
-          //final byte delimiter = 10; //This is the ASCII code for a newline character
-          stopWorker = false;
-       //   readBufferPosition = 0;
-       //   readBuffer = new byte[1024];
-          workerThread = new Thread(new Runnable() {
-              public void run() {
-                  while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+        Toast.makeText(getActivity(), "Waiting for response...", Toast.LENGTH_LONG).show();
+        stopWorker = false;
+        final Handler handler = new Handler();
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
 
-                      try {
-
-                        /*  int bytesAvailable = mmInputStream.available();
-                          if (bytesAvailable > 0) {
-                              byte[] packetBytes = new byte[bytesAvailable];
-                              mmInputStream.read(packetBytes);
-
-                              byte[] encodedBytes = new byte[readBufferPosition];
-                              System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                              final String data = new String(packetBytes, "US-ASCII");
-                              readBufferPosition = 0;
-
-                              handler.post(new Runnable() {
-                                  public void run() {
-                                      System.out.println(data);
-                                      if (data.equals(positiveResponse)) {
-                                          mListener.updateGlobal(mmDevice, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
-                                          warningText.setText("");
-                                          responseProgress.setVisibility(View.INVISIBLE);
-                                          try {
-                                              closeBT();
-                                          } catch (IOException e) {
-                                              e.printStackTrace();
-                                          }
-                                      }
-
-                                  }
-                              });
-                              Thread.sleep(100);
-
-                          }
-                            */
+                    try {
                         final String data = bf.listenForResponse();
-                          handler.post(new Runnable() {
-                              public void run() {
-                                  System.out.println(data);
-                                  if (data.equals(positiveResponse)) {
-                                      mListener.updateGlobal(mmDevice, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
-                                      warningText.setText("");
-                                      responseProgress.setVisibility(View.INVISIBLE);
-                                      stopWorker = true;
-                                      try {
-                                          bf.closeBT();
-                                      } catch (IOException e) {
-                                          e.printStackTrace();
-                                      }
-                                  }
-
-                              }
-                          });
-                          Thread.sleep(100);
-
-
-                      } catch (IOException e) {
-                          e.printStackTrace();
-                      } catch (InterruptedException e) {
-                          e.printStackTrace();
-                      }
-                  }
-              }
-          });
-          workerThread.start();
-      }
-
-
-     /* void closeBT() throws IOException {
-          stopWorker = true;
-          mmOutputStream.close();
-          mmInputStream.close();
-          mmSocket.close();
-          connected = false;
-      }*/
+                        handler.post(new Runnable() {
+                            public void run() {
+                                System.out.println(data);
+                                if (data.equals(positiveResponse)) {
+                                    mListener.updateGlobal(device, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+                                    responseProgress.setVisibility(View.INVISIBLE);
+                                    stopWorker = true;
+                                    try {
+                                        bf.closeBT();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else if (data.equals(negativeResponse)) {
+                                    Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
+                                    responseProgress.setVisibility(View.INVISIBLE);
+                                    stopWorker = true;
+                                    try {
+                                        bf.closeBT();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+                        Thread.sleep(100);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        workerThread.start();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -300,5 +260,4 @@ public class config extends Fragment {
         void updateGlobal(BluetoothDevice bluetoothDevice, String typology, String mode, int distance);
 
     }
-
 }

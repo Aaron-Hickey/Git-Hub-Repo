@@ -4,10 +4,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.text.TextUtils;
-import android.view.View;
-import android.os.Handler;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,20 +25,19 @@ public class bluetoothFunctions {
     private boolean connected = false;
 
 
-    public bluetoothFunctions() throws IOException {
+    public bluetoothFunctions() {
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             System.out.println("No Adapter Found");
         }
 
-        if (!bluetoothAdapter.isEnabled()) {
+       /* if (!bluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        }
-        // openConnection();
+        }*/
     }
 
-    public boolean connectToDevice(String s) {
+    public boolean connectToDevice(String s) throws IOException {
         boolean res = false;
         Set<BluetoothDevice> pairedDevices = getDevices();
         if (pairedDevices.size() > 0) {
@@ -52,7 +47,7 @@ public class bluetoothFunctions {
                 if (device.getName().equals(s)) {
                     this.device = device;
                     connected = openConnection();
-
+                    res = true;
                     break;
                 }
             }
@@ -65,7 +60,10 @@ public class bluetoothFunctions {
         return pairedDevices;
     }
 
-    public boolean openConnection() {
+    public boolean openConnection() throws IOException {
+        if (connected) {
+            closeBT();
+        }
         if (device != null) {
             try {
                 UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
@@ -106,19 +104,15 @@ public class bluetoothFunctions {
             if (bytesAvailable > 0) {
                 byte[] packetBytes = new byte[bytesAvailable];
                 inputStream.read(packetBytes);
-
                 byte[] encodedBytes = new byte[readBufferPosition];
                 System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                 final String data = new String(packetBytes, "US-ASCII");
                 readBufferPosition = 0;
-
-
                 System.out.println(data);
                 return data;
 
             }
         }
-
         return noData;
     }
 
