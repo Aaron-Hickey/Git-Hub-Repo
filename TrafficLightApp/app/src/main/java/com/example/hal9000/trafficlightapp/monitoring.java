@@ -91,7 +91,7 @@ public class monitoring extends Fragment {
         typoText.setText(t.getTypology());
         modeText.setText(t.getMode());
         densityText.setText(t.getDensity());
-        distanceText.setText(Integer.toString(t.getDistance()));
+        distanceText.setText(Double.toString(t.getDistance()));
         countryText.setText(t.getCountry());
         batteryText.setText(Integer.toString(t.getBattery()));
     }

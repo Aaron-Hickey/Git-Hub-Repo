@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
@@ -34,6 +35,7 @@ public class global_view extends Fragment {
     private View view;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
     private bluetoothFunctions bf;
+    private LinearLayout configReminder;
 
     public global_view() {
     }
@@ -54,7 +56,7 @@ public class global_view extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_global_view, container, false);
         imageView = view.findViewById(R.id.imageView);
-        // createTrafficLights(2, "Pendular", 100);
+        configReminder = view.findViewById(R.id.ConfigReminder);
         return view;
     }
 
@@ -83,6 +85,8 @@ public class global_view extends Fragment {
         bf.connectToDevice(bluetoothDevice);
         bf.sendData("Global:");
 
+
+        configReminder.setVisibility(View.INVISIBLE);
         int numberOfLights;
         if(typology.equals("2F P Turning"))
         {

@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,9 +45,12 @@ public class config extends Fragment {
     private ImageButton refreshButton;
     private ProgressBar responseProgress;
     private Spinner configDeviceList;
+    private Switch constructionSwitch;
+
     private String typologyOptionsValue;
     private String modeOptionsValue;
     private int distanceOptionsValue;
+    private int constructionSwitchValue = 0;
 
     private BluetoothDevice device;
 
@@ -82,6 +87,17 @@ public class config extends Fragment {
         applyButton = view.findViewById(R.id.applyButton);
         warningText = view.findViewById(R.id.warningConfig);
         responseProgress = view.findViewById(R.id.configLoading);
+        constructionSwitch = view.findViewById(R.id.constructionSwitch);
+
+        constructionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                        constructionSwitchValue = 1;
+                } else {
+                        constructionSwitchValue = 0;
+                }
+            }
+        });
 
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -154,10 +170,9 @@ public class config extends Fragment {
         }
 
         modeOptionsValue = modeOptions.getSelectedItem().toString();
-
         if (valid) {
 
-            String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+            String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue, constructionSwitchValue);
             boolean sendStatus = bf.sendData(msg);
             if (sendStatus == true) {
                 responseProgress.setVisibility(View.VISIBLE);
@@ -169,7 +184,7 @@ public class config extends Fragment {
         }
     }
 
-    private String createMessage(String typo, String mode, int dist) {
+    private String createMessage(String typo, String mode, int dist, int construction) {
         int typoCode = typologyOptions.getSelectedItemPosition() + 1;
 
         String modeCode = "0";
@@ -182,13 +197,15 @@ public class config extends Fragment {
         }
 
         String distCode;
+        double distD = (100 *  Math.round(dist / 100));
+        System.out.println(distD);
         if (dist < 1000) {
             distCode = "0" + (dist / 100); // 01 = 100, 02 = 200 etc.
         } else {
             distCode = "" + (dist / 100); // 10 = 1000, 11 = 1100 etc.
         }
 
-        return "Config:" + typoCode + "" + modeCode + "" + distCode;
+        return "Config:" + typoCode + "" + modeCode + "" + distCode +""+construction;
     }
 
     private void listenForResponse() {
