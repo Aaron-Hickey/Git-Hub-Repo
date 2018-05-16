@@ -77,12 +77,12 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void createTrafficLights(String bluetoothDevice, String typology, String mode, int distance) throws IOException {
+    public void createTrafficLights(String typology, String mode, int distance) throws IOException {
 
-        Toast.makeText(getActivity(), bluetoothDevice, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getActivity(), bluetoothDevice, Toast.LENGTH_LONG).show();
 
         bf = bluetoothFunctions.getInstance();
-        bf.connectToDevice(bluetoothDevice);
+       // bf.connectToDevice(bluetoothDevice);
         bf.sendData("Global:");
 
 

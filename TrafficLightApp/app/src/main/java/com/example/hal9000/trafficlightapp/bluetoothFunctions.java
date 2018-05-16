@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,17 +27,17 @@ public class bluetoothFunctions {
     private boolean hasAdapter = false;
 
     private static final bluetoothFunctions INSTANCE = new bluetoothFunctions();
-    public bluetoothFunctions() {
+
+    private bluetoothFunctions() {
 
     }
-    public static bluetoothFunctions getInstance()
-    {
+
+    public static bluetoothFunctions getInstance() {
         return INSTANCE;
     }
 
-    public void connectAdapter()
-    {
-        if(hasAdapter == false) {
+    public void connectAdapter() {
+        if (hasAdapter == false) {
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (bluetoothAdapter == null) {
                 System.out.println("No Adapter Found");
@@ -44,9 +45,24 @@ public class bluetoothFunctions {
         }
 
 
-       /* if (!bluetoothAdapter.isEnabled()) {
+       /*if (!bluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+
         }*/
+    }
+
+    public boolean hasDevice() {
+        if (device == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isConnected() {
+        if (connected) {
+            return true;
+        }
+        return false;
     }
 
     public boolean connectToDevice(String s) throws IOException {
@@ -104,7 +120,7 @@ public class bluetoothFunctions {
         if (outputStream != null) {
 
             outputStream.write(s.getBytes());
-            System.out.println("Send Data:"+ s);
+            System.out.println("Send Data:" + s);
 
             //   listenForResponse();
             return true;
@@ -138,16 +154,13 @@ public class bluetoothFunctions {
 
     public void closeBT() throws IOException {
         stopWorker = true;
-        if(outputStream!=null)
-        {
+        if (outputStream != null) {
             outputStream.close();
         }
-        if(inputStream!=null)
-        {
+        if (inputStream != null) {
             inputStream.close();
         }
-        if(socket!=null)
-        {
+        if (socket != null) {
             socket.close();
         }
         connected = false;

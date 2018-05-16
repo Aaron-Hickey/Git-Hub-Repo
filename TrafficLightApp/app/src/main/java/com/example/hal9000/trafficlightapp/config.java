@@ -103,32 +103,29 @@ public class config extends Fragment {
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 stopWorker = true;
-                boolean open = false;
-                try {
-                    open = openBT();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (open == true) {
-                    warningText.setText("");
+              //  boolean open = false;
+                if(bf.hasDevice() && bf.isConnected()) {
                     try {
                         sendData();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    Toast.makeText(getActivity(), "Failed to open Bluetooth", Toast.LENGTH_LONG).show();
                 }
+                else
+                {
+                    Toast.makeText(getActivity(), "Please connect to a device first", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
-        refreshButton = view.findViewById(R.id.refreshConfigButton);
+       /* refreshButton = view.findViewById(R.id.refreshConfigButton);
         refreshButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 displayDevices();
             }
         });
-        displayDevices();
+        displayDevices();*/
         return view;
     }
 
@@ -230,17 +227,17 @@ public class config extends Fragment {
                                     Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
                                     stopWorker = true;
                                     responseProgress.setVisibility(View.INVISIBLE);
-                                    try {
+                                   /* try {
                                         bf.closeBT();
                                     } catch (IOException e) {
                                         e.printStackTrace();
-                                    }
+                                    }*/
                                 }
                                 System.out.println(data);
                                 if (data.equals(positiveResponse)) {
                                     try {
-                                        bf.closeBT();
-                                        mListener.updateGlobal(deviceName, typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+                                      //  bf.closeBT();
+                                        mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
                                         responseProgress.setVisibility(View.INVISIBLE);
                                         stopWorker = true;
                                     } catch (IOException e) {
@@ -251,11 +248,11 @@ public class config extends Fragment {
                                     Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
                                     responseProgress.setVisibility(View.INVISIBLE);
                                     stopWorker = true;
-                                    try {
+                                    /*try {
                                         bf.closeBT();
                                     } catch (IOException e) {
                                         e.printStackTrace();
-                                    }
+                                    }*/
                                 }
                             }
                         });
@@ -289,7 +286,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(String bluetoothDevice, String typology, String mode, int distance) throws IOException;
+        void updateGlobal(String typology, String mode, int distance) throws IOException;
 
     }
 }
