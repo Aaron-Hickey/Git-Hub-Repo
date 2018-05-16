@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
         setUpFragments();
-        setTitle("");
+        setTitle("Global View");
 
     }
 
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 });
     }
 
+
     public void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_Global:
@@ -109,13 +111,15 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 swapFragment(globalF);
         }
 
-        menuItem.setChecked(true);
+     //   menuItem.setChecked(true);
         setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
 
     @Override
     public void returnToGlobal() {
+        setTitle("Global View");
+
         swapFragment(globalF);
     }
 
@@ -123,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     public void updateMonitoring(trafficLight t) {
         monitoring f = (monitoring) fragmentManager.findFragmentByTag("monitorF");
         f.updateInfo(t);
+        setTitle("Monitoring");
         swapFragment(monitorF);
     }
 
@@ -130,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
     public void updateGlobal(String bluetoothDevice, String typology, String mode, int distance) throws IOException {
         global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
         f.createTrafficLights(bluetoothDevice, typology, mode ,distance);
-
+        setTitle("Global View");
         swapFragment(globalF);
     }
 

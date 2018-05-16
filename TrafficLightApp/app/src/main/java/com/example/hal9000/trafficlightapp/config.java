@@ -59,6 +59,7 @@ public class config extends Fragment {
     volatile boolean stopWorker;
     private bluetoothFunctions bf;
     private int time;
+
     public config() {
     }
 
@@ -92,9 +93,9 @@ public class config extends Fragment {
         constructionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                        constructionSwitchValue = 1;
+                    constructionSwitchValue = 1;
                 } else {
-                        constructionSwitchValue = 0;
+                    constructionSwitchValue = 0;
                 }
             }
         });
@@ -108,17 +109,14 @@ public class config extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if(open == true)
-                {
+                if (open == true) {
                     warningText.setText("");
                     try {
                         sendData();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getActivity(), "Failed to open Bluetooth", Toast.LENGTH_LONG).show();
                 }
             }
@@ -197,15 +195,18 @@ public class config extends Fragment {
         }
 
         String distCode;
-        double distD = (100 *  Math.round(dist / 100));
-        System.out.println(distD);
+        double distD = dist;
+
+        distD = (100 * Math.ceil(distD / 100));
+        dist = (int) distD;
+        System.out.println(dist);
         if (dist < 1000) {
             distCode = "0" + (dist / 100); // 01 = 100, 02 = 200 etc.
         } else {
             distCode = "" + (dist / 100); // 10 = 1000, 11 = 1100 etc.
         }
 
-        return "Config:" + typoCode + "" + modeCode + "" + distCode +""+construction;
+        return "Config:" + typoCode + "" + modeCode + "" + distCode + "" + construction +"\n";
     }
 
     private void listenForResponse() {
@@ -222,10 +223,9 @@ public class config extends Fragment {
                         final String data = bf.listenForResponse();
                         handler.post(new Runnable() {
                             public void run() {
-                                System.out.println(""+time);
+                                System.out.println("" + time);
                                 time--;
-                                if(time<=0)
-                                {
+                                if (time <= 0) {
 
                                     Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
                                     stopWorker = true;
