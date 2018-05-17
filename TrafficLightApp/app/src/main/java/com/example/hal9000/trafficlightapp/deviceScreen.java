@@ -54,9 +54,9 @@ public class deviceScreen extends Fragment {
                 try {
                     boolean res = openBT();
                     {
-                        if (res) {
+                        if (res == true) {
                             Toast.makeText(getActivity(), "Connected", Toast.LENGTH_LONG).show();
-
+                            mListener.returnToGlobal();
                         }
                     }
 
@@ -106,7 +106,6 @@ public class deviceScreen extends Fragment {
     }
 
     public interface deviceScreenInterface {
-
-
+        void returnToGlobal();
     }
 }

@@ -112,17 +112,13 @@ public class bluetoothFunctions {
         } else {
             System.out.println("No device");
             return false;
-
         }
     }
 
     public boolean sendData(String s) throws IOException {
         if (outputStream != null) {
-
             outputStream.write(s.getBytes());
             System.out.println("Send Data:" + s);
-
-            //   listenForResponse();
             return true;
         } else {
             System.out.println("Send message failed");
@@ -144,12 +140,11 @@ public class bluetoothFunctions {
                 System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                 final String data = new String(packetBytes, "US-ASCII");
                 readBufferPosition = 0;
-                System.out.println(data);
                 return data;
 
             }
         }
-        return noData;
+        return null;
     }
 
     public void closeBT() throws IOException {

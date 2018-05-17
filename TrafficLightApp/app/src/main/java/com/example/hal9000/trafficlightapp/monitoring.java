@@ -3,6 +3,7 @@ package com.example.hal9000.trafficlightapp;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+import java.io.IOException;
 
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
@@ -29,8 +32,10 @@ public class monitoring extends Fragment {
     private TextView distanceText;
     private TextView countryText;
     private TextView batteryText;
-
     private Button backButton;
+
+    private Thread workerThread;
+    volatile boolean stopWorker;
 
     public monitoring() {
     }
@@ -84,16 +89,35 @@ public class monitoring extends Fragment {
         batteryText = view.findViewById(R.id.batteryMonitor);
     }
 
-    public void updateInfo(trafficLight t) {
-        idText.setText(Integer.toString(t.getId()));
-        stateText.setText(t.getState());
-        substateText.setText(t.getSubstate());
-        typoText.setText(t.getTypology());
-        modeText.setText(t.getMode());
-        densityText.setText(t.getDensity());
-        distanceText.setText(Double.toString(t.getDistance()));
-        countryText.setText(t.getCountry());
-        batteryText.setText(Integer.toString(t.getBattery()));
+    public void updateInfo(final trafficLight t) {
+        stopWorker = false;
+        final Handler handler = new Handler();
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    handler.post(new Runnable() {
+                        public void run() {
+                            idText.setText(Integer.toString(t.getId()));
+                            stateText.setText(t.getState());
+                            substateText.setText(t.getSubstate());
+                            typoText.setText(t.getTypology());
+                            modeText.setText(t.getMode());
+                            densityText.setText(t.getDensity());
+                            distanceText.setText(Double.toString(t.getDistance()));
+                            countryText.setText(t.getCountry());
+                            batteryText.setText(Integer.toString(t.getBattery()));
+                        }
+                    });
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        });
+        workerThread.start();
     }
 
     public void disableLight(ImageView light) {

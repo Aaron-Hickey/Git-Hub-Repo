@@ -1,16 +1,14 @@
 package com.example.hal9000.trafficlightapp;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 
@@ -28,38 +26,44 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
 
+    private Thread workerThread;
+    volatile boolean stopWorker;
+
+
     private bluetoothFunctions bf;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar =  findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mDrawer =  findViewById(R.id.drawer_layout);
-        nvDrawer =  findViewById(R.id.nvView);
+        mDrawer = findViewById(R.id.drawer_layout);
+        nvDrawer = findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
         setUpFragments();
         setTitle("Bluetooth Devices");
-        bf= bluetoothFunctions.getInstance();
+        bf = bluetoothFunctions.getInstance();
         bf.connectAdapter();
+        listenForResponse();
 
     }
 
-    public void setUpFragments()
-    {
+    public void setUpFragments() {
         fragmentManager = getSupportFragmentManager();
         globalF = global_view.newInstance();
         configF = config.newInstance();
         monitorF = monitoring.newInstance();
         devicesF = deviceScreen.newInstance();
-        fragmentManager.beginTransaction().add(R.id.flContent,devicesF,"devicesF").commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,globalF,"globalF").hide(globalF).commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,configF,"configF").hide(configF).commit();
-        fragmentManager.beginTransaction().add(R.id.monitorPopUp,monitorF,"monitorF").hide(monitorF).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent, devicesF, "devicesF").commit();
+        fragmentManager.beginTransaction().add(R.id.flContent, globalF, "globalF").hide(globalF).commit();
+        fragmentManager.beginTransaction().add(R.id.flContent, configF, "configF").hide(configF).commit();
+        fragmentManager.beginTransaction().add(R.id.monitorPopUp, monitorF, "monitorF").hide(monitorF).commit();
         currentF = devicesF;
     }
+
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
@@ -96,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 });
     }
 
-
     public void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_Global:
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 swapFragment(devicesF);
         }
 
-     //   menuItem.setChecked(true);
+        //   menuItem.setChecked(true);
         setTitle(menuItem.getTitle());
         mDrawer.closeDrawers();
     }
@@ -128,25 +131,69 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     }
 
     @Override
-    public void updateMonitoring(trafficLight t) {
-        monitoring f = (monitoring) fragmentManager.findFragmentByTag("monitorF");
-        f.updateInfo(t);
+    public void updateMonitoring(trafficLight tl) {
+        monitoring fr = (monitoring) fragmentManager.findFragmentByTag("monitorF");
+        fr.updateInfo(tl);
         setTitle("Monitoring");
         swapFragment(monitorF);
     }
 
     @Override
     public void updateGlobal(String typology, String mode, int distance) throws IOException {
-        global_view f =(global_view) fragmentManager.findFragmentByTag("globalF");
-        f.createTrafficLights(typology, mode ,distance);
+        global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
+        f.createTrafficLights(typology, mode, distance);
         setTitle("Global View");
         swapFragment(globalF);
     }
 
-    public void swapFragment(Fragment n)
+    private void listenForResponse() {
+        stopWorker = false;
+        final Handler handler = new Handler();
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+
+                    try {
+                        final String data = bf.listenForResponse();
+                        handler.post(new Runnable() {
+                            public void run() {
+                                if(data != null) {
+                                    parseData(data);
+                                }
+                            }
+                        });
+                        Thread.sleep(100);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        workerThread.start();
+    }
+    public void parseData(String data)
     {
-        if(currentF != n)
+        String response[] = data.split(":", 2);
+        if(response.length == 2) {
+            if (response[0].equals("Config")) {
+                System.out.println("Config is " + response[1]);
+            } else if (response[0].equals("Monitoring")) {
+                System.out.println("Monitoring is "+response[1]);
+                global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
+                f.updateTrafficLights(1,"Green","","2","mode1","5/h",200,1);
+
+            }
+        }
+        else
         {
+            System.out.println(response[0]);
+        }
+    }
+    public void swapFragment(Fragment n) {
+        if (currentF != n) {
 
             fragmentManager.beginTransaction()
                     .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)

@@ -33,8 +33,6 @@ public class config extends Fragment {
     private String positiveResponse = "ok"; // response that the traffic light returns if configuration is successful
     private String negativeResponse = "no";
 
-    private String deviceName;
-
     private configInterface mListener;
     private Button applyButton;
     private Spinner typologyOptions;
@@ -42,9 +40,7 @@ public class config extends Fragment {
     private Spinner distanceOptions;
     private EditText distanceCustomOptions;
     private TextView warningText;
-    private ImageButton refreshButton;
     private ProgressBar responseProgress;
-    private Spinner configDeviceList;
     private Switch constructionSwitch;
 
     private String typologyOptionsValue;
@@ -52,10 +48,7 @@ public class config extends Fragment {
     private int distanceOptionsValue;
     private int constructionSwitchValue = 0;
 
-    private BluetoothDevice device;
-
     private Thread workerThread;
-    private boolean connected = false;
     volatile boolean stopWorker;
     private bluetoothFunctions bf;
     private int time;
@@ -80,7 +73,6 @@ public class config extends Fragment {
 
         bf = bluetoothFunctions.getInstance();
 
-        configDeviceList = view.findViewById(R.id.configDeviceList);
         typologyOptions = view.findViewById(R.id.typologySpinner);
         modeOptions = view.findViewById(R.id.modeSpinner);
         distanceOptions = view.findViewById(R.id.distanceSpinner);
@@ -103,7 +95,6 @@ public class config extends Fragment {
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 stopWorker = true;
-              //  boolean open = false;
                 if(bf.hasDevice() && bf.isConnected()) {
                     try {
                         sendData();
@@ -119,33 +110,7 @@ public class config extends Fragment {
             }
         });
 
-       /* refreshButton = view.findViewById(R.id.refreshConfigButton);
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                displayDevices();
-            }
-        });
-        displayDevices();*/
         return view;
-    }
-
-    private void displayDevices() {
-        ArrayList<String> foundDevices = new ArrayList<>();
-        Set<BluetoothDevice> pairedDevices = bf.getDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                foundDevices.add(device.getName().toString());
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_spinner_item, foundDevices);
-                configDeviceList.setAdapter(adapter);
-            }
-        }
-    }
-
-    private boolean openBT() throws IOException {
-        deviceName = configDeviceList.getSelectedItem().toString();
-        return bf.connectToDevice(deviceName);
-
     }
 
     private void sendData() throws IOException {
@@ -169,13 +134,8 @@ public class config extends Fragment {
 
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue, constructionSwitchValue);
             boolean sendStatus = bf.sendData(msg);
-            if (sendStatus == true) {
-                responseProgress.setVisibility(View.VISIBLE);
-            } else {
-                Toast.makeText(getActivity(), "Message Failed To Send", Toast.LENGTH_LONG).show();
-            }
+            mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
 
-            listenForResponse();
         }
     }
 
@@ -196,7 +156,6 @@ public class config extends Fragment {
 
         distD = (100 * Math.ceil(distD / 100));
         dist = (int) distD;
-        System.out.println(dist);
         if (dist < 1000) {
             distCode = "0" + (dist / 100); // 01 = 100, 02 = 200 etc.
         } else {
@@ -206,7 +165,7 @@ public class config extends Fragment {
         return "Config:" + typoCode + "" + modeCode + "" + distCode + "" + construction +"\n";
     }
 
-    private void listenForResponse() {
+   /* private void listenForResponse() {
         Toast.makeText(getActivity(), "Waiting for response...", Toast.LENGTH_LONG).show();
         stopWorker = false;
         final Handler handler = new Handler();
@@ -230,7 +189,6 @@ public class config extends Fragment {
                                 System.out.println(data);
                                 if (data.equals(positiveResponse)) {
                                     try {
-                                        mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
                                         responseProgress.setVisibility(View.INVISIBLE);
                                         stopWorker = true;
                                     } catch (IOException e) {
@@ -255,7 +213,7 @@ public class config extends Fragment {
         });
         workerThread.start();
     }
-
+*/
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
