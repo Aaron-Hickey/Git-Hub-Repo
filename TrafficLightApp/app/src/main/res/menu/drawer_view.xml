@@ -9,7 +9,7 @@
         <item
             android:id="@+id/nav_Config"
             android:icon="@drawable/ic_config"
-            android:title="Config" />
+            android:title="Configuration" />
         <item
             android:id="@+id/nav_Monitor"
             android:icon="@drawable/ic_monitoring"
@@ -17,6 +17,6 @@
         <item
             android:id="@+id/nav_bluetooth_console"
             android:icon="@drawable/ic_bluetooth"
-            android:title="Bluetooth Console" />
+            android:title="Devices" />
     </group>
 </menu>

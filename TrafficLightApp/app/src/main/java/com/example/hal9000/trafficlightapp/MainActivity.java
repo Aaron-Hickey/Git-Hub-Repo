@@ -16,14 +16,13 @@ import android.support.v7.widget.Toolbar;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements bluetooth_console.OnFragmentInteractionListener, global_view.globalInterface, monitoring.OnFragmentInteractionListener, config.configInterface, deviceScreen.deviceScreenInterface {
+public class MainActivity extends AppCompatActivity implements global_view.globalInterface, monitoring.OnFragmentInteractionListener, config.configInterface, deviceScreen.deviceScreenInterface {
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView nvDrawer;
     private Fragment globalF;
     private Fragment configF;
     private Fragment monitorF;
-    private Fragment consoleF;
     private Fragment currentF;
     private Fragment devicesF;
     private FragmentManager fragmentManager;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
         setUpFragments();
-        setTitle("Global View");
+        setTitle("Bluetooth Devices");
         bf= bluetoothFunctions.getInstance();
         bf.connectAdapter();
 
@@ -54,13 +53,11 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
         globalF = global_view.newInstance();
         configF = config.newInstance();
         monitorF = monitoring.newInstance();
-        consoleF = bluetooth_console.newInstance();
         devicesF = deviceScreen.newInstance();
         fragmentManager.beginTransaction().add(R.id.flContent,devicesF,"devicesF").commit();
         fragmentManager.beginTransaction().add(R.id.flContent,globalF,"globalF").hide(globalF).commit();
         fragmentManager.beginTransaction().add(R.id.flContent,configF,"configF").hide(configF).commit();
         fragmentManager.beginTransaction().add(R.id.monitorPopUp,monitorF,"monitorF").hide(monitorF).commit();
-        fragmentManager.beginTransaction().add(R.id.flContent,consoleF,"consoleF").hide(consoleF).commit();
         currentF = devicesF;
     }
     private ActionBarDrawerToggle setupDrawerToggle() {
@@ -112,10 +109,10 @@ public class MainActivity extends AppCompatActivity implements bluetooth_console
                 swapFragment(monitorF);
                 break;
             case R.id.nav_bluetooth_console:
-                swapFragment(consoleF);
+                swapFragment(devicesF);
                 break;
             default:
-                swapFragment(globalF);
+                swapFragment(devicesF);
         }
 
      //   menuItem.setChecked(true);

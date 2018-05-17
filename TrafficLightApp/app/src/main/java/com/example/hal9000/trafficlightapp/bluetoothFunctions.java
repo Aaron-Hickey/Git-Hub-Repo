@@ -45,10 +45,10 @@ public class bluetoothFunctions {
         }
 
 
-       /*if (!bluetoothAdapter.isEnabled()) {
+       if (!bluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
-        }*/
+        }
     }
 
     public boolean hasDevice() {

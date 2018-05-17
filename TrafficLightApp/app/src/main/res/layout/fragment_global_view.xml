@@ -11,8 +11,6 @@
         android:id="@+id/ConfigReminder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_marginTop="200dp"
         android:orientation="vertical">
 
@@ -20,7 +18,8 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connect to an existing device or configure a new one" />
+            android:gravity="center"
+            android:text="Configure a device first" />
 
     </LinearLayout>
 

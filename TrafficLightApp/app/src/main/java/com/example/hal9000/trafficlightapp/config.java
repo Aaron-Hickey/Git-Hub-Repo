@@ -223,20 +223,13 @@ public class config extends Fragment {
                                 System.out.println("" + time);
                                 time--;
                                 if (time <= 0) {
-
                                     Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
                                     stopWorker = true;
                                     responseProgress.setVisibility(View.INVISIBLE);
-                                   /* try {
-                                        bf.closeBT();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }*/
                                 }
                                 System.out.println(data);
                                 if (data.equals(positiveResponse)) {
                                     try {
-                                      //  bf.closeBT();
                                         mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
                                         responseProgress.setVisibility(View.INVISIBLE);
                                         stopWorker = true;
@@ -248,11 +241,6 @@ public class config extends Fragment {
                                     Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
                                     responseProgress.setVisibility(View.INVISIBLE);
                                     stopWorker = true;
-                                    /*try {
-                                        bf.closeBT();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }*/
                                 }
                             }
                         });
