@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     private bluetoothFunctions bf;
     private String[] stateValues =  {"Off", "Active", "Passive", "Yellow Flashing"};
     private String[] substateValues = {"Full Red", "Green", "Orange", "Red", "Red Extended", "Green Flashing", "Yellow Flashing", "Full Red Barrage", "Green Barrage", "Orange Barrage", "Red Barrage"};
-    //private String[] typologyValues = {"Error", }
+    private String[] typologyValues = {"Error", "2F P Turning", "3F P Turning", "3F P PR SE", "4F P Turning", "4F PR SE A A", "4F PR SE S S", "4F PR SE A S", "4F PR SE S A"  };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,7 +204,9 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
 
                 int id = Character.getNumericValue(command.charAt(0));
                 String state = stateValues[ Character.getNumericValue(command.charAt(1))];
-                f.updateTrafficLights(id,state,"","2","mode1","5/h",200,1);
+                String substate = substateValues[Character.getNumericValue(command.charAt(2))];
+                String typology = typologyValues[Character.getNumericValue(command.charAt(3))];
+                f.updateTrafficLights(id,state,substate,typology,"mode1","5/h",200,1);
 
             }
         }

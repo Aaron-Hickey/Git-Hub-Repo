@@ -120,7 +120,7 @@ public class global_view extends Fragment {
 
         for (int x = 0; x < numberOfLights; x++) {
             System.out.println(x);
-            trafficLightList.add(new trafficLight(x + 1, "", "", "" + typology, mode, "", distance, "France", 100));
+            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0, "-", 0));
             MapPins.add(pinHolder.get(x));
         }
         imageView.setImage(ImageSource.asset(stringHolder.get(numberOfLights - 2)));

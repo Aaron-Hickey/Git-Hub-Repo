@@ -93,22 +93,6 @@ public class trafficLight
 
     private int battery;
 
-
-
-
-
-    public trafficLight(int id)
-    {
-        this.id = id;
-    }
-
-
-
-    /*public void printDetails()
-    {
-        System.out.println(id);
-    }*/
-
     public int getId() {
         return id;
     }

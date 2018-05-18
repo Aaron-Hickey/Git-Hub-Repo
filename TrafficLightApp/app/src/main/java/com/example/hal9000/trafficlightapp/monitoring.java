@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -36,7 +37,7 @@ public class monitoring extends Fragment {
     private TextView batteryText;
     private Button backButton;
     private Executor executor = Executors.newSingleThreadExecutor();
-
+    private bluetoothFunctions bf = bluetoothFunctions.getInstance();
     private Thread workerThread;
     volatile boolean stopWorker;
 
@@ -102,6 +103,11 @@ public class monitoring extends Fragment {
             while (!Thread.currentThread().isInterrupted() && !stopWorker) {
                 handler.post(new Runnable() {
                     public void run() {
+                        try {
+                            bf.sendData("Monitoring:"+trafficLight.getId());
+                        } catch (IOException e) {
+                            Toast.makeText(getActivity(), "Failed to Refresh Data", Toast.LENGTH_LONG).show();
+                        }
                         idText.setText(Integer.toString(trafficLight.getId()));
                         stateText.setText(trafficLight.getState());
                         substateText.setText(trafficLight.getSubstate());
@@ -115,7 +121,7 @@ public class monitoring extends Fragment {
                     }
                 });
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
