@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ public class deviceScreen extends Fragment {
     private deviceScreenInterface mListener;
     private Spinner deviceSpinner;
     private Button connectButton;
+    private ImageButton refreshButton;
     private bluetoothFunctions bf;
 
     public deviceScreen() {
@@ -63,6 +65,12 @@ public class deviceScreen extends Fragment {
                 } catch (IOException e) {
                     Toast.makeText(getActivity(), "Failed to Connect", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+        refreshButton = view.findViewById(R.id.refreshDeviceScreenButton);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                displayDevices();
             }
         });
         displayDevices();

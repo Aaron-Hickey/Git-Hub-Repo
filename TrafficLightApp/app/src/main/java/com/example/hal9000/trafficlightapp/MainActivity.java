@@ -1,5 +1,7 @@
 package com.example.hal9000.trafficlightapp;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -25,12 +27,14 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     private Fragment devicesF;
     private FragmentManager fragmentManager;
     private ActionBarDrawerToggle drawerToggle;
-
     private Thread workerThread;
     volatile boolean stopWorker;
-
-
+    private boolean hasAdapter = false;
+    private BluetoothAdapter bluetoothAdapter;
     private bluetoothFunctions bf;
+    private String[] stateValues =  {"Off", "Active", "Passive", "Yellow Flashing"};
+    private String[] substateValues = {"Full Red", "Green", "Orange", "Red", "Red Extended", "Green Flashing", "Yellow Flashing", "Full Red Barrage", "Green Barrage", "Orange Barrage", "Red Barrage"};
+    //private String[] typologyValues = {"Error", }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
         mDrawer.addDrawerListener(drawerToggle);
         setUpFragments();
         setTitle("Bluetooth Devices");
+        connectAdapter();
         bf = bluetoothFunctions.getInstance();
         bf.connectAdapter();
         listenForResponse();
@@ -145,7 +150,19 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
         setTitle("Global View");
         swapFragment(globalF);
     }
-
+    public void connectAdapter() {
+        if (hasAdapter == false) {
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (bluetoothAdapter == null) {
+                System.out.println("No Adapter Found");
+            }
+        }
+        if (!bluetoothAdapter.isEnabled())
+        {
+            Intent enableBtIntent = new Intent(bluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(enableBtIntent);
+        }
+    }
     private void listenForResponse() {
         stopWorker = false;
         final Handler handler = new Handler();
@@ -178,12 +195,16 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     {
         String response[] = data.split(":", 2);
         if(response.length == 2) {
+            String command = response[1];
             if (response[0].equals("Config")) {
                 System.out.println("Config is " + response[1]);
             } else if (response[0].equals("Monitoring")) {
                 System.out.println("Monitoring is "+response[1]);
                 global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
-                f.updateTrafficLights(1,"Green","","2","mode1","5/h",200,1);
+
+                int id = Character.getNumericValue(command.charAt(0));
+                String state = stateValues[ Character.getNumericValue(command.charAt(1))];
+                f.updateTrafficLights(id,state,"","2","mode1","5/h",200,1);
 
             }
         }

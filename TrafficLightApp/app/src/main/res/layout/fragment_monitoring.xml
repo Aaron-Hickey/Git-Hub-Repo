@@ -4,19 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/common_google_signin_btn_text_dark_default"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp">
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="232dp"
         android:baselineAligned="false"
-        android:orientation="horizontal"
-        android:paddingTop="50dp">
+        android:orientation="horizontal">
 
 
         <FrameLayout
-            android:layout_width="182dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
@@ -49,171 +50,171 @@
 
         </FrameLayout>
 
-        <TableLayout
-            android:layout_width="wrap_content"
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp">
+
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TableRow
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="ID: " />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ID: " />
-
-                <TextView
-                    android:id="@+id/idMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
-
-            </TableRow>
-
-            <TableRow
+            <TextView
+                android:id="@+id/idMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="State: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/stateMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="State: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/stateMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Substate: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/substateMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Substate: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/substateMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Typology: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/typologyMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Typology: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/typologyMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mode: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/modeMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mode: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/modeMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Density: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/densityMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Density: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/densityMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Distance: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/distanceMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Distance: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/distanceMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Country Standard: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/countryMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Country Standard: " />
 
-            <TableRow
+            <TextView
+                android:id="@+id/countryMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Battery: " />
+        </TableRow>
 
-                <TextView
-                    android:id="@+id/batteryMonitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TextView" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            </TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Battery: " />
 
-        </TableLayout>
+            <TextView
+                android:id="@+id/batteryMonitor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
-    </LinearLayout>
+        </TableRow>
+
+    </TableLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -329,10 +330,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:paddingBottom="60dp"
         android:paddingLeft="100dp"
-        android:paddingRight="100dp"
-        android:paddingTop="100dp">
+        android:paddingRight="100dp">
 
         <Button
             android:id="@+id/backButton"

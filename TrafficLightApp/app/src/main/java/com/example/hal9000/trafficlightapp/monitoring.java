@@ -16,6 +16,8 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
@@ -33,9 +35,12 @@ public class monitoring extends Fragment {
     private TextView countryText;
     private TextView batteryText;
     private Button backButton;
+    private Executor executor = Executors.newSingleThreadExecutor();
 
     private Thread workerThread;
     volatile boolean stopWorker;
+
+    private trafficLight trafficLight;
 
     public monitoring() {
     }
@@ -90,34 +95,40 @@ public class monitoring extends Fragment {
     }
 
     public void updateInfo(final trafficLight t) {
+        trafficLight = t;
         stopWorker = false;
         final Handler handler = new Handler();
-        workerThread = new Thread(new Runnable() {
-            public void run() {
-                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    handler.post(new Runnable() {
-                        public void run() {
-                            idText.setText(Integer.toString(t.getId()));
-                            stateText.setText(t.getState());
-                            substateText.setText(t.getSubstate());
-                            typoText.setText(t.getTypology());
-                            modeText.setText(t.getMode());
-                            densityText.setText(t.getDensity());
-                            distanceText.setText(Double.toString(t.getDistance()));
-                            countryText.setText(t.getCountry());
-                            batteryText.setText(Integer.toString(t.getBattery()));
-                        }
-                    });
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        executor.execute(new Runnable() { public void run() {
+            while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                handler.post(new Runnable() {
+                    public void run() {
+                        idText.setText(Integer.toString(trafficLight.getId()));
+                        stateText.setText(trafficLight.getState());
+                        substateText.setText(trafficLight.getSubstate());
+                        typoText.setText(trafficLight.getTypology());
+                        modeText.setText(trafficLight.getMode());
+                        densityText.setText(trafficLight.getDensity());
+                        distanceText.setText(Double.toString(trafficLight.getDistance()));
+                        countryText.setText(trafficLight.getCountry());
+                        batteryText.setText(Integer.toString(trafficLight.getBattery()));
 
+                    }
+                });
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+
+            }
+        } });
+
+       /* workerThread = new Thread(new Runnable() {
+            public void run() {
+
             }
         });
-        workerThread.start();
+        workerThread.start();*/
     }
 
     public void disableLight(ImageView light) {

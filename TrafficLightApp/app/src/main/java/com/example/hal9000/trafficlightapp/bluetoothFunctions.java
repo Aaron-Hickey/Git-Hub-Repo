@@ -1,8 +1,10 @@
 package com.example.hal9000.trafficlightapp;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 
 import java.io.IOException;
@@ -25,6 +27,7 @@ public class bluetoothFunctions {
     volatile boolean stopWorker;
     private boolean connected = false;
     private boolean hasAdapter = false;
+    private Context context;
 
     private static final bluetoothFunctions INSTANCE = new bluetoothFunctions();
 
@@ -43,12 +46,11 @@ public class bluetoothFunctions {
                 System.out.println("No Adapter Found");
             }
         }
-
-
-       if (!bluetoothAdapter.isEnabled()) {
-            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-
-        }
+      /*  if (!bluetoothAdapter.isEnabled())
+        {
+            Intent enableBtIntent = new Intent(bluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(enableBtIntent);
+        }*/
     }
 
     public boolean hasDevice() {
