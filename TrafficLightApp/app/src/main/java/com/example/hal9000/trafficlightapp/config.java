@@ -134,7 +134,7 @@ public class config extends Fragment {
 
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue, constructionSwitchValue);
             boolean sendStatus = bf.sendData(msg);
-            mListener.updateGlobal(typologyOptionsValue, modeOptionsValue, distanceOptionsValue);
+            mListener.updateGlobal(typologyOptionsValue);
 
         }
     }
@@ -232,7 +232,7 @@ public class config extends Fragment {
     }
 
     public interface configInterface {
-        void updateGlobal(String typology, String mode, int distance) throws IOException;
+        void updateGlobal(String typology) throws IOException;
 
     }
 }

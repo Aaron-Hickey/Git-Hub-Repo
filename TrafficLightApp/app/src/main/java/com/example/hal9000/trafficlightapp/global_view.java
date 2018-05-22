@@ -79,7 +79,7 @@ public class global_view extends Fragment {
         }
     }
 
-    public void createTrafficLights(String typology, String mode, int distance) throws IOException {
+    public void createTrafficLights(String typology) throws IOException {
 
         bf = bluetoothFunctions.getInstance();
         bf.sendData("Global:\n");

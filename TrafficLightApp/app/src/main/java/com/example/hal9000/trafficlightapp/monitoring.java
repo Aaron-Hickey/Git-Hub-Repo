@@ -128,13 +128,6 @@ public class monitoring extends Fragment {
 
             }
         } });
-
-       /* workerThread = new Thread(new Runnable() {
-            public void run() {
-
-            }
-        });
-        workerThread.start();*/
     }
 
     public void disableLight(ImageView light) {

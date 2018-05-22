@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     private String[] stateValues =  {"Off", "Active", "Passive", "Yellow Flashing"};
     private String[] substateValues = {"Full Red", "Green", "Orange", "Red", "Red Extended", "Green Flashing", "Yellow Flashing", "Full Red Barrage", "Green Barrage", "Orange Barrage", "Red Barrage"};
     private String[] typologyValues = {"Error", "2F P Turning", "3F P Turning", "3F P PR SE", "4F P Turning", "4F PR SE A A", "4F PR SE S S", "4F PR SE A S", "4F PR SE S A"  };
+    private String[] modeValues = {"Pendular", "Red Barrage", "Green Force"};
+    private String[] densityValues = {"Low", "Average", "Strong", "Very Strong", "Max"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +147,9 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     }
 
     @Override
-    public void updateGlobal(String typology, String mode, int distance) throws IOException {
+    public void updateGlobal(String typology) throws IOException {
         global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
-        f.createTrafficLights(typology, mode, distance);
+        f.createTrafficLights(typology);
         setTitle("Global View");
         swapFragment(globalF);
     }
@@ -202,12 +205,18 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 System.out.println("Monitoring is "+response[1]);
                 global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
 
-                int id = Character.getNumericValue(command.charAt(0));
-                String state = stateValues[ Character.getNumericValue(command.charAt(1))];
-                String substate = substateValues[Character.getNumericValue(command.charAt(2))];
-                String typology = typologyValues[Character.getNumericValue(command.charAt(3))];
-                f.updateTrafficLights(id,state,substate,typology,"mode1","5/h",200,1);
+                if(command.length() > 6) {
+                    int id = Character.getNumericValue(command.charAt(0));
+                    String state = stateValues[Character.getNumericValue(command.charAt(1))];
+                    String substate = substateValues[Character.getNumericValue(command.charAt(2))];
+                    String typology = typologyValues[Character.getNumericValue(command.charAt(3))];
+                    String mode = modeValues[Character.getNumericValue(command.charAt(4))];
+                    String density = densityValues[Character.getNumericValue(command.charAt(5))];
+                    StringBuilder sb = new StringBuilder();
+                    int distance = Integer.parseInt(sb.append(command.charAt(6)).append(command.charAt(7)).toString())*100;
 
+                    f.updateTrafficLights(id, state, substate, typology, mode, density, distance, 1);
+                }
             }
         }
         else
