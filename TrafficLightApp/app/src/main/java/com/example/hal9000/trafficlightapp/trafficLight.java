@@ -13,9 +13,10 @@ public class trafficLight
     private String mode;
     private String density;
     private int distance;
-    private String country;
+    private String battery;
 
-    public trafficLight(int id, String state, String substate, String typology, String mode, String density, int distance, String country, int battery) {
+
+    public trafficLight(int id, String state, String substate, String typology, String mode, String density, int distance, String battery) {
         this.id = id;
         this.state = state;
         this.substate = substate;
@@ -23,7 +24,6 @@ public class trafficLight
         this.mode = mode;
         this.density = density;
         this.distance = distance;
-        this.country = country;
         this.battery = battery;
     }
 
@@ -75,23 +75,14 @@ public class trafficLight
         this.distance = distance;
     }
 
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public int getBattery() {
+    public String getBattery() {
         return battery;
     }
 
-    public void setBattery(int battery) {
+    public void setBattery(String battery) {
         this.battery = battery;
     }
 
-    private int battery;
 
     public int getId() {
         return id;

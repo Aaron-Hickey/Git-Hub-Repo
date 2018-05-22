@@ -33,7 +33,6 @@ public class monitoring extends Fragment {
     private TextView modeText;
     private TextView densityText;
     private TextView distanceText;
-    private TextView countryText;
     private TextView batteryText;
     private Button backButton;
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -91,7 +90,6 @@ public class monitoring extends Fragment {
         modeText = view.findViewById(R.id.modeMonitor);
         densityText = view.findViewById(R.id.densityMonitor);
         distanceText = view.findViewById(R.id.distanceMonitor);
-        countryText = view.findViewById(R.id.countryMonitor);
         batteryText = view.findViewById(R.id.batteryMonitor);
     }
 
@@ -114,9 +112,8 @@ public class monitoring extends Fragment {
                         typoText.setText(trafficLight.getTypology());
                         modeText.setText(trafficLight.getMode());
                         densityText.setText(trafficLight.getDensity());
-                        distanceText.setText(Double.toString(trafficLight.getDistance()));
-                        countryText.setText(trafficLight.getCountry());
-                        batteryText.setText(Integer.toString(trafficLight.getBattery()));
+                        distanceText.setText(Integer.toString(trafficLight.getDistance())+"m");
+                        batteryText.setText(trafficLight.getBattery());
 
                     }
                 });

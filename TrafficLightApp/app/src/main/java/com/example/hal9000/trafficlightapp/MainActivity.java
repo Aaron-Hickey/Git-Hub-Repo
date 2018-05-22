@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     private String[] typologyValues = {"Error", "2F P Turning", "3F P Turning", "3F P PR SE", "4F P Turning", "4F PR SE A A", "4F PR SE S S", "4F PR SE A S", "4F PR SE S A"  };
     private String[] modeValues = {"Pendular", "Red Barrage", "Green Force"};
     private String[] densityValues = {"Low", "Average", "Strong", "Very Strong", "Max"};
+    private String[] batteryValues = {"Out", "Deep Discharge", "Discharged", "Normal", "Full", "Charging" };
 
 
     @Override
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 System.out.println("Monitoring is "+response[1]);
                 global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
 
-                if(command.length() > 6) {
+                if(command.length() >= 9) {
                     int id = Character.getNumericValue(command.charAt(0));
                     String state = stateValues[Character.getNumericValue(command.charAt(1))];
                     String substate = substateValues[Character.getNumericValue(command.charAt(2))];
@@ -214,8 +215,9 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                     String density = densityValues[Character.getNumericValue(command.charAt(5))];
                     StringBuilder sb = new StringBuilder();
                     int distance = Integer.parseInt(sb.append(command.charAt(6)).append(command.charAt(7)).toString())*100;
+                    String battery = batteryValues[Character.getNumericValue(command.charAt(8))];
 
-                    f.updateTrafficLights(id, state, substate, typology, mode, density, distance, 1);
+                    f.updateTrafficLights(id, state, substate, typology, mode, density, distance, battery);
                 }
             }
         }

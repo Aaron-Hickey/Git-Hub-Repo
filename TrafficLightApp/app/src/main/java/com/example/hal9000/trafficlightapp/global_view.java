@@ -65,7 +65,7 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, int battery)
+    public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, String battery)
     {
         if(!trafficLightList.isEmpty()) {
             trafficLight tl = trafficLightList.get(id - 1);
@@ -120,7 +120,7 @@ public class global_view extends Fragment {
 
         for (int x = 0; x < numberOfLights; x++) {
             System.out.println(x);
-            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0, "-", 0));
+            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0,  "-"));
             MapPins.add(pinHolder.get(x));
         }
         imageView.setImage(ImageSource.asset(stringHolder.get(numberOfLights - 2)));
