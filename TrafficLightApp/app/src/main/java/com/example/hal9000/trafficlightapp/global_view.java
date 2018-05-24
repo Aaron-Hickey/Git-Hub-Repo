@@ -67,7 +67,7 @@ public class global_view extends Fragment {
 
     public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, String battery, boolean opticalFailure, boolean fallen, boolean cycleDesync, boolean signalLost)
     {
-        if(!trafficLightList.isEmpty()) {
+        if(!trafficLightList.isEmpty() && id <= trafficLightList.size() && id > 0) {
             trafficLight tl = trafficLightList.get(id - 1);
             tl.setState(state);
             tl.setSubstate(substate);

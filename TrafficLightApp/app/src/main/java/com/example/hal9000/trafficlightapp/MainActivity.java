@@ -319,22 +319,46 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 opticalFailure = true;
                 notifyWarning("Traffic Light " + id + " has an optical failure", id);
             }
+            else
+            {
+                opticalFailure = false;
+            }
             if (Character.getNumericValue(command.charAt(10)) == 1) {
                 fallen = true;
                 notifyWarning("Traffic Light " + id + " has fallen over", id);
+            }
+            else
+            {
+                fallen = false;
             }
             if (Character.getNumericValue(command.charAt(11)) == 1) {
                 cycleDesync = true;
                 notifyWarning("Traffic Light " + id + " has a cycle desync", id);
             }
+            else
+            {
+                cycleDesync = false;
+            }
             if (Character.getNumericValue(command.charAt(12)) == 1) {
                 signalLost = true;
                 notifyWarning("Traffic Light " + id + " has lost signal", id);
             }
-
+            else
+            {
+                signalLost = false;
+            }
 
                 f.updateTrafficLights(id, state, substate, typology, mode, density, distance, battery, opticalFailure, fallen, cycleDesync, signalLost);
             }
+            else
+            {
+                notifyWarning("Invalid Response from Traffic Light", 6);
+            }
+        }
+        else
+        {
+            notifyWarning("Invalid Response from Traffic Light", 6);
+
         }
     }
 
