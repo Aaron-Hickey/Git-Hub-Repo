@@ -65,7 +65,7 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, String battery)
+    public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, String battery, boolean opticalFailure, boolean fallen, boolean cycleDesync, boolean signalLost)
     {
         if(!trafficLightList.isEmpty()) {
             trafficLight tl = trafficLightList.get(id - 1);
@@ -76,10 +76,14 @@ public class global_view extends Fragment {
             tl.setDensity(density);
             tl.setDistance(distance);
             tl.setBattery(battery);
+            tl.setCycleDesync(cycleDesync);
+            tl.setFallen(fallen);
+            tl.setOpticalFailure(opticalFailure);
+            tl.setSignalLost(signalLost);
         }
     }
 
-    public void createTrafficLights(String typology) throws IOException {
+    public ArrayList<trafficLight> createTrafficLights(String typology) throws IOException {
 
         bf = bluetoothFunctions.getInstance();
         bf.sendData("Global:\n");
@@ -120,12 +124,13 @@ public class global_view extends Fragment {
 
         for (int x = 0; x < numberOfLights; x++) {
             System.out.println(x);
-            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0,  "-"));
+            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0,  "-",false,false,false,false));
             MapPins.add(pinHolder.get(x));
         }
         imageView.setImage(ImageSource.asset(stringHolder.get(numberOfLights - 2)));
         imageView.setPins(MapPins);
         addMapPinActionListener();
+        return trafficLightList;
     }
 
     public boolean addMapPinActionListener() {

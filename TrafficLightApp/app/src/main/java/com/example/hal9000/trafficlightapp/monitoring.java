@@ -1,7 +1,12 @@
 package com.example.hal9000.trafficlightapp;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -20,6 +25,8 @@ import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
     private View view;
@@ -37,10 +44,10 @@ public class monitoring extends Fragment {
     private Button backButton;
     private Executor executor = Executors.newSingleThreadExecutor();
     private bluetoothFunctions bf = bluetoothFunctions.getInstance();
-    private Thread workerThread;
     volatile boolean stopWorker;
-
     private trafficLight trafficLight;
+
+    //NotificationManager notificationManager;
 
     public monitoring() {
     }
@@ -60,14 +67,8 @@ public class monitoring extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_monitoring, container, false);
-        displayWarning("opticalWarning");
-        displayWarning("lowBatteryWarning");
-        displayWarning("fallenWarning");
-        displayWarning("signalWarning");
-        displayWarning("desyncWarning");
         initVariables();
-        disableLight(greenImage);
-        disableLight(yellowImage);
+
 
         backButton = view.findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +81,8 @@ public class monitoring extends Fragment {
     }
 
     public void initVariables() {
+      //  notificationManager = (NotificationManager)
+        //        getActivity().getSystemService(NOTIFICATION_SERVICE);
         greenImage = view.findViewById(R.id.greenLight);
         yellowImage = view.findViewById(R.id.yellowLight);
         redImage = view.findViewById(R.id.redLight);
@@ -91,6 +94,7 @@ public class monitoring extends Fragment {
         densityText = view.findViewById(R.id.densityMonitor);
         distanceText = view.findViewById(R.id.distanceMonitor);
         batteryText = view.findViewById(R.id.batteryMonitor);
+
     }
 
     public void updateInfo(final trafficLight t) {
@@ -101,11 +105,11 @@ public class monitoring extends Fragment {
             while (!Thread.currentThread().isInterrupted() && !stopWorker) {
                 handler.post(new Runnable() {
                     public void run() {
-                        try {
+                      /*  try {
                             bf.sendData("Monitoring:"+trafficLight.getId());
                         } catch (IOException e) {
                             Toast.makeText(getActivity(), "Failed to Refresh Data", Toast.LENGTH_LONG).show();
-                        }
+                        }*/
                         idText.setText(Integer.toString(trafficLight.getId()));
                         stateText.setText(trafficLight.getState());
                         substateText.setText(trafficLight.getSubstate());
@@ -114,6 +118,61 @@ public class monitoring extends Fragment {
                         densityText.setText(trafficLight.getDensity());
                         distanceText.setText(Integer.toString(trafficLight.getDistance())+"m");
                         batteryText.setText(trafficLight.getBattery());
+
+                        if(trafficLight.getBattery() == "Deep Discharge" || trafficLight.getBattery() == "Discharged")
+                        {
+                            displayWarning("lowBatteryWarning");
+                        }
+                        else
+                        {
+                            removeWarning("lowBatteryWarning");
+                        }
+                        if(trafficLight.isCycleDesync())
+                        {
+                            displayWarning("desyncWarning");
+                        }
+                        else
+                        {
+                            removeWarning("desyncWarning");
+                        }
+                        if(trafficLight.isFallen())
+                        {
+                            displayWarning("fallenWarning");
+                        }
+                        else
+                        {
+                            removeWarning("fallenWarning");
+                        }
+                        if(trafficLight.isOpticalFailure())
+                        {
+                            displayWarning("opticalWarning");
+                        }
+                        else
+                        {
+                            removeWarning("opticalWarning");
+                        }
+
+                        if(trafficLight.isSignalLost())
+                        {
+                            displayWarning("signalWarning");
+                        }
+                        else
+                        {
+                            removeWarning("signalWarning");
+                        }
+
+                        if(trafficLight.getSubstate() == "Green" || trafficLight.getSubstate() == "Green Flashing" || trafficLight.getSubstate() == "Green Barrage")
+                        {
+                            enableGreen();
+                        }
+                        else if(trafficLight.getSubstate() == "Yellow" || trafficLight.getSubstate() == "Yellow Barrage" || trafficLight.getSubstate() == "Yellow Flashing")
+                        {
+                            enableYellow();
+                        }
+                        else if(trafficLight.getSubstate() == "Red" || trafficLight.getSubstate() == "Full Red" || trafficLight.getSubstate() == "Red Extended" || trafficLight.getSubstate() == "Full Red Barrage" || trafficLight.getSubstate() == "Red Barrage")
+                        {
+                            enableRed();
+                        }
 
                     }
                 });
@@ -127,13 +186,23 @@ public class monitoring extends Fragment {
         } });
     }
 
-    public void disableLight(ImageView light) {
-        light.setVisibility(View.INVISIBLE);
+
+    public void enableGreen() {
+        greenImage.setVisibility(View.VISIBLE);
+        yellowImage.setVisibility(View.INVISIBLE);
+        redImage.setVisibility(View.INVISIBLE);
+    }
+    public void enableYellow() {
+        greenImage.setVisibility(View.INVISIBLE);
+        yellowImage.setVisibility(View.VISIBLE);
+        redImage.setVisibility(View.INVISIBLE);
+    }
+    public void enableRed() {
+        greenImage.setVisibility(View.INVISIBLE);
+        yellowImage.setVisibility(View.INVISIBLE);
+        redImage.setVisibility(View.VISIBLE);
     }
 
-    public void enableLight(ImageView light) {
-        light.setVisibility(View.VISIBLE);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -160,6 +229,24 @@ public class monitoring extends Fragment {
         Resources res = getResources();
         int id = res.getIdentifier(s, "id", getContext().getPackageName());
         LinearLayout tempLayout = view.findViewById(id);
-        tempLayout.setVisibility(View.VISIBLE);
+        if(tempLayout.getVisibility() == View.INVISIBLE)
+        {
+            tempLayout.setVisibility(View.VISIBLE);
+          //  notifyWarning(message);
+        }
     }
+
+    public void removeWarning(String s) {
+        Resources res = getResources();
+        int id = res.getIdentifier(s, "id", getContext().getPackageName());
+        LinearLayout tempLayout = view.findViewById(id);
+        if(tempLayout.getVisibility() == View.VISIBLE)
+        {
+            tempLayout.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
+
+
 }
