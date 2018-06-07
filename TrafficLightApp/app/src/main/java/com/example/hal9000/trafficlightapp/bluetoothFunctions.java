@@ -1,12 +1,8 @@
 package com.example.hal9000.trafficlightapp;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.content.Intent;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,14 +16,13 @@ public class bluetoothFunctions {
     private BluetoothSocket socket;
     private OutputStream outputStream;
     private InputStream inputStream;
-    private Thread workerThread;
     private byte[] readBuffer;
     private int readBufferPosition;
-    private String response;
     volatile boolean stopWorker;
     private boolean connected = false;
     private boolean hasAdapter = false;
-    private Context context;
+
+    private int messageLength = 7;
 
     private static final bluetoothFunctions INSTANCE = new bluetoothFunctions();
 
@@ -81,7 +76,8 @@ public class bluetoothFunctions {
                 if (device.getName().equals(s)) {
                     this.device = device;
                     connected = openConnection();
-                    res = true;
+
+                    res = sendData("Test");
                     break;
                 }
             }
@@ -119,6 +115,16 @@ public class bluetoothFunctions {
 
     public boolean sendData(String s) throws IOException {
         if (outputStream != null) {
+            if(s.length()>messageLength)
+            {
+                System.out.println("Message is too long");
+                return false;
+            }
+            while(s.length() < messageLength)
+            {
+                s += "$";
+            }
+            s +="\n";
             outputStream.write(s.getBytes());
             System.out.println("Send Data:" + s);
             return true;
@@ -130,7 +136,6 @@ public class bluetoothFunctions {
 
 
     public String listenForResponse() throws IOException {
-        String noData = "noData";
         if (connected) {
             int bytesAvailable = inputStream.available();
             readBufferPosition = 0;

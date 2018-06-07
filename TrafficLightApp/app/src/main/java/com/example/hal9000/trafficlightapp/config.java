@@ -95,15 +95,13 @@ public class config extends Fragment {
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 stopWorker = true;
-                if(bf.hasDevice() && bf.isConnected()) {
+                if (bf.hasDevice() && bf.isConnected()) {
                     try {
                         sendData();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getActivity(), "Please connect to a device first", Toast.LENGTH_LONG).show();
                 }
 
@@ -134,8 +132,9 @@ public class config extends Fragment {
 
             String msg = createMessage(typologyOptionsValue, modeOptionsValue, distanceOptionsValue, constructionSwitchValue);
             boolean sendStatus = bf.sendData(msg);
-            mListener.updateGlobal(typologyOptionsValue);
-
+            if (sendStatus == true) {
+                mListener.updateGlobal(typologyOptionsValue);
+            }
         }
     }
 
@@ -162,58 +161,58 @@ public class config extends Fragment {
             distCode = "" + (dist / 100); // 10 = 1000, 11 = 1100 etc.
         }
 
-        return "Config:" + typoCode + "" + modeCode + "" + distCode + "" + construction +"\n";
+        return "C:" + typoCode + "" + modeCode + "" + distCode + "" + construction;
     }
 
-   /* private void listenForResponse() {
-        Toast.makeText(getActivity(), "Waiting for response...", Toast.LENGTH_LONG).show();
-        stopWorker = false;
-        final Handler handler = new Handler();
-        time = 100;
-        workerThread = new Thread(new Runnable() {
-            public void run() {
+    /* private void listenForResponse() {
+         Toast.makeText(getActivity(), "Waiting for response...", Toast.LENGTH_LONG).show();
+         stopWorker = false;
+         final Handler handler = new Handler();
+         time = 100;
+         workerThread = new Thread(new Runnable() {
+             public void run() {
 
-                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                 while (!Thread.currentThread().isInterrupted() && !stopWorker) {
 
-                    try {
-                        final String data = bf.listenForResponse();
-                        handler.post(new Runnable() {
-                            public void run() {
-                                System.out.println("" + time);
-                                time--;
-                                if (time <= 0) {
-                                    Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
-                                    stopWorker = true;
-                                    responseProgress.setVisibility(View.INVISIBLE);
-                                }
-                                System.out.println(data);
-                                if (data.equals(positiveResponse)) {
-                                    try {
-                                        responseProgress.setVisibility(View.INVISIBLE);
-                                        stopWorker = true;
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                     try {
+                         final String data = bf.listenForResponse();
+                         handler.post(new Runnable() {
+                             public void run() {
+                                 System.out.println("" + time);
+                                 time--;
+                                 if (time <= 0) {
+                                     Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
+                                     stopWorker = true;
+                                     responseProgress.setVisibility(View.INVISIBLE);
+                                 }
+                                 System.out.println(data);
+                                 if (data.equals(positiveResponse)) {
+                                     try {
+                                         responseProgress.setVisibility(View.INVISIBLE);
+                                         stopWorker = true;
+                                     } catch (IOException e) {
+                                         e.printStackTrace();
+                                     }
 
-                                } else if (data.equals(negativeResponse)) {
-                                    Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
-                                    responseProgress.setVisibility(View.INVISIBLE);
-                                    stopWorker = true;
-                                }
-                            }
-                        });
-                        Thread.sleep(100);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        workerThread.start();
-    }
-*/
+                                 } else if (data.equals(negativeResponse)) {
+                                     Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
+                                     responseProgress.setVisibility(View.INVISIBLE);
+                                     stopWorker = true;
+                                 }
+                             }
+                         });
+                         Thread.sleep(100);
+                     } catch (IOException e) {
+                         e.printStackTrace();
+                     } catch (InterruptedException e) {
+                         e.printStackTrace();
+                     }
+                 }
+             }
+         });
+         workerThread.start();
+     }
+ */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -229,6 +228,19 @@ public class config extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void updateConfiguration(int typology, int mode, int distance, boolean construction)
+    {
+        typologyOptions.setSelection(typology);
+        modeOptions.setSelection(mode);
+        distanceCustomOptions.setText(""+distance);
+        constructionSwitch.setChecked(construction);
+        try {
+            mListener.updateGlobal(typologyOptions.getSelectedItem().toString());
+        } catch (IOException e) {
+            Toast.makeText(getActivity(), "Failed to update Global View", Toast.LENGTH_LONG).show();
+        }
     }
 
     public interface configInterface {

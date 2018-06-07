@@ -84,10 +84,6 @@ public class global_view extends Fragment {
     }
 
     public ArrayList<trafficLight> createTrafficLights(String typology) throws IOException {
-
-        bf = bluetoothFunctions.getInstance();
-        bf.sendData("Global:\n");
-
         configReminder.setVisibility(View.INVISIBLE);
         int numberOfLights;
         if(typology.equals("2F P Turning"))

@@ -59,6 +59,11 @@ public class deviceScreen extends Fragment {
                         if (res == true) {
                             Toast.makeText(getActivity(), "Connected", Toast.LENGTH_LONG).show();
                             mListener.returnToGlobal();
+                            bf.sendData("G:");
+                        }
+                        else
+                        {
+                            Toast.makeText(getActivity(), "Failed to Connect", Toast.LENGTH_LONG).show();
                         }
                     }
 

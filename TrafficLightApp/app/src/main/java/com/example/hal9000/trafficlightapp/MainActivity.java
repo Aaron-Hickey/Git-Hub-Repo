@@ -2,6 +2,7 @@ package com.example.hal9000.trafficlightapp;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
         notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         listenForResponse();
+
     }
 
     public void setUpFragments() {
@@ -99,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         drawerToggle.syncState();
-
     }
 
     @Override
@@ -156,6 +157,11 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     }
 
     @Override
+    public ArrayList<trafficLight> getLights() {
+        return trafficLightList;
+    }
+
+    @Override
     public void updateMonitoring(trafficLight tl) {
         monitoring fr = (monitoring) fragmentManager.findFragmentByTag("monitorF");
         fr.updateInfo(tl);
@@ -168,8 +174,8 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
         global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
         trafficLightList = f.createTrafficLights(typology);
         //   System.out.println("The ID "+trafficLightList.get(0).getId());
-        setTitle("Global View");
-        swapFragment(globalF);
+      //  setTitle("Global View");
+      //  swapFragment(globalF);
     }
 
     public void connectAdapter() {
@@ -218,12 +224,16 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
         String response[] = data.split(":", 2);
         if (response.length == 2) {
             String command = response[1];
-            if (response[0].equals("Config")) {
-               configResponse(command);
-            } else if (response[0].equals("Monitoring")) {
+            if (response[0].equals("C")) {
+                configResponse(command);
+            } else if (response[0].equals("M")) {
                 monitoringResponse(command);
-            } else if (response[0].equals("Global")) {
+            } else if (response[0].equals("G")) {
                 globalResponse(command);
+            }
+            else if(response[0].equals("A"))
+            {
+                notifyAlert(command);
             }
         } else {
             System.out.println(response[0]);
@@ -247,53 +257,45 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     public void monitoringResponse(String command) {
         global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
         boolean valid = true;
-        for(int x = 0; x < command.length(); x++)
-        {
-            if(!Character.isDigit(command.charAt(x)))
-            {
+        for (int x = 0; x < command.length(); x++) {
+            if (!Character.isDigit(command.charAt(x))) {
                 valid = false;
             }
         }
         if (command.length() >= 13 && valid) {
             //ID
             int temp = Character.getNumericValue(command.charAt(0));
-            if(temp > 4 || temp < 1)
-            {
+            if (temp > 4 || temp < 1) {
                 valid = false;
             }
             int id = Character.getNumericValue(command.charAt(0));
             //State
             temp = Character.getNumericValue(command.charAt(1));
-            if(temp > stateValues.length || temp < 0)
-            {
+            if (temp > stateValues.length || temp < 0) {
                 valid = false;
             }
             String state = stateValues[Character.getNumericValue(command.charAt(1))];
             //Substate
             temp = Character.getNumericValue(command.charAt(2));
-            if(temp > substateValues.length || temp < 0)
-            {
+            if (temp > substateValues.length || temp < 0) {
                 valid = false;
             }
             String substate = substateValues[Character.getNumericValue(command.charAt(2))];
             //Typology
             temp = Character.getNumericValue(command.charAt(3));
-            if(temp > typologyValues.length || temp < 0)
-            {
+            if (temp > typologyValues.length || temp < 0) {
                 valid = false;
             }
             String typology = typologyValues[Character.getNumericValue(command.charAt(3))];
             //Mode
             temp = Character.getNumericValue(command.charAt(4));
-            if(temp > modeValues.length || temp < 0)
-            {
+            if (temp > modeValues.length || temp < 0) {
                 valid = false;
             }
             String mode = modeValues[Character.getNumericValue(command.charAt(4))];
             //Density
             temp = Character.getNumericValue(command.charAt(5));
-            if(temp > densityValues.length || temp < 0)
-            {
+            if (temp > densityValues.length || temp < 0) {
                 valid = false;
             }
             String density = densityValues[Character.getNumericValue(command.charAt(5))];
@@ -301,72 +303,78 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
             //Distance
             StringBuilder sb = new StringBuilder();
             int distance = Integer.parseInt(sb.append(command.charAt(6)).append(command.charAt(7)).toString()) * 100;
-            if(distance<100 || distance > 3000)
-            {
+            if (distance < 100 || distance > 3000) {
                 valid = false;
             }
             //Battery
             temp = Character.getNumericValue(command.charAt(8));
-            if(temp > batteryValues.length || temp < 0)
-            {
+            if (temp > batteryValues.length || temp < 0) {
                 valid = false;
             }
             String battery = batteryValues[Character.getNumericValue(command.charAt(8))];
 
-            if(valid)
-            {
-            if (Character.getNumericValue(command.charAt(9)) == 1) {
-                opticalFailure = true;
-                notifyWarning("Traffic Light " + id + " has an optical failure", id);
-            }
-            else
-            {
-                opticalFailure = false;
-            }
-            if (Character.getNumericValue(command.charAt(10)) == 1) {
-                fallen = true;
-                notifyWarning("Traffic Light " + id + " has fallen over", id);
-            }
-            else
-            {
-                fallen = false;
-            }
-            if (Character.getNumericValue(command.charAt(11)) == 1) {
-                cycleDesync = true;
-                notifyWarning("Traffic Light " + id + " has a cycle desync", id);
-            }
-            else
-            {
-                cycleDesync = false;
-            }
-            if (Character.getNumericValue(command.charAt(12)) == 1) {
-                signalLost = true;
-                notifyWarning("Traffic Light " + id + " has lost signal", id);
-            }
-            else
-            {
-                signalLost = false;
-            }
+            if (valid) {
+                if (Character.getNumericValue(command.charAt(8)) == 0) {
+                    notifyWarning("Traffic Light " + id + " has dead battery", id);
+                }
+                if (Character.getNumericValue(command.charAt(8)) == 1 || Character.getNumericValue(command.charAt(8)) == 2) {
+                    notifyWarning("Traffic Light " + id + " has low battery", id);
+                }
+                if (Character.getNumericValue(command.charAt(9)) == 1) {
+                    opticalFailure = true;
+                    notifyWarning("Traffic Light " + id + " has an optical failure", id);
+                } else {
+                    opticalFailure = false;
+                }
+                if (Character.getNumericValue(command.charAt(10)) == 1) {
+                    fallen = true;
+                    notifyWarning("Traffic Light " + id + " has fallen over", id);
+                } else {
+                    fallen = false;
+                }
+                if (Character.getNumericValue(command.charAt(11)) == 1) {
+                    cycleDesync = true;
+                    notifyWarning("Traffic Light " + id + " has a cycle desync", id);
+                } else {
+                    cycleDesync = false;
+                }
+                if (Character.getNumericValue(command.charAt(12)) == 1) {
+                    signalLost = true;
+                    notifyWarning("Traffic Light " + id + " has lost signal", id);
+                } else {
+                    signalLost = false;
+                }
 
                 f.updateTrafficLights(id, state, substate, typology, mode, density, distance, battery, opticalFailure, fallen, cycleDesync, signalLost);
-            }
-            else
-            {
+            } else {
                 notifyWarning("Invalid Response from Traffic Light", 6);
             }
-        }
-        else
-        {
+        } else {
             notifyWarning("Invalid Response from Traffic Light", 6);
 
         }
     }
 
-    public void configResponse(String command)
-    {
+    public void configResponse(String command) {
+        config c = (config) fragmentManager.findFragmentByTag("configF");
+
         if (command.equals("no")) {
             notifyWarning("Configuration Failed", 5);
         }
+        int typology = Character.getNumericValue(command.charAt(0));
+        int mode = Character.getNumericValue(command.charAt(1));
+        StringBuilder sb = new StringBuilder();
+        int distance = Integer.parseInt(sb.append(command.charAt(2)).append(command.charAt(3)).toString()) * 100;
+        boolean construction;
+        if(Character.getNumericValue(command.charAt(4)) == 1)
+        {
+            construction = true;
+        }
+        else
+        {
+            construction = false;
+        }
+        c.updateConfiguration(typology, mode, distance, construction);
     }
 
     public void swapFragment(Fragment n) {
@@ -386,9 +394,9 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     }
 
     public void notifyWarning(String message, int id) {
-        // Intent intent = new Intent(this, NotificationReceiver.class);
+        Intent intent = new Intent(this, MainActivity.class);
 // use System.currentTimeMillis() to have a unique ID for the pending intent
-        //  PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 // build notification
 // the addAction re-use the same intent to keep the example short
@@ -397,17 +405,14 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
             long[] pattern = {0, 500, 250, 500};
 
             Notification n = new Notification.Builder(this)
-                    .setContentTitle("Alert")
+                    .setContentTitle("Warning")
                     .setContentText(message)
                     .setSmallIcon(R.drawable.ic_warning_sign)
                     .setLights(Color.BLUE, 100, 100)
                     .setSound(Uri.parse("android.resource://"
                             + this.getPackageName() + "/" + R.raw.alert))
-                    // .setContentIntent(pIntent)
+                    .setContentIntent(pIntent)
                     .setAutoCancel(true)
-                    // .addAction(R.drawable.icon, "Call", pIntent)
-                    // .addAction(R.drawable.icon, "More", pIntent)
-                    // .addAction(R.drawable.icon, "And more", pIntent)
                     .setVibrate(pattern)
                     .build();
 
@@ -424,18 +429,52 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
             }
         } else {
             Notification n = new Notification.Builder(this)
+                    .setContentTitle("Warning")
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.ic_warning_sign)
+                    .setLights(Color.BLUE, 100, 100)
+                    .setContentIntent(pIntent)
+                    .setAutoCancel(true)
+                    .build();
+            notificationManager.notify(id, n);
+        }
+    }
+
+    public void notifyAlert(String message) {
+        Intent intent = new Intent(this, MainActivity.class);
+// use System.currentTimeMillis() to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+// build notification
+// the addAction re-use the same intent to keep the example short
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
+            long[] pattern = {0, 2000};
+
+            Notification n = new Notification.Builder(this)
                     .setContentTitle("Alert")
                     .setContentText(message)
                     .setSmallIcon(R.drawable.ic_warning_sign)
                     .setLights(Color.BLUE, 100, 100)
-
-                    // .setContentIntent(pIntent)
+                    .setSound(Uri.parse("android.resource://"
+                            + this.getPackageName() + "/" + R.raw.alert))
+                    .setContentIntent(pIntent)
                     .setAutoCancel(true)
-                    // .addAction(R.drawable.icon, "Call", pIntent)
-                    // .addAction(R.drawable.icon, "More", pIntent)
-                    // .addAction(R.drawable.icon, "And more", pIntent)
+                    .setVibrate(pattern)
                     .build();
-            notificationManager.notify(id, n);
+            notificationManager.notify(1, n);
+
+
+        } else {
+            Notification n = new Notification.Builder(this)
+                    .setContentTitle("Alert")
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.ic_warning_sign)
+                    .setLights(Color.BLUE, 100, 100)
+                    .setContentIntent(pIntent)
+                    .setAutoCancel(true)
+                    .build();
+            notificationManager.notify(1, n);
         }
     }
 }
