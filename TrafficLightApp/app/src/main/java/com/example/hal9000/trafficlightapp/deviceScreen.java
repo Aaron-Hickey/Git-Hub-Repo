@@ -2,7 +2,6 @@ package com.example.hal9000.trafficlightapp;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
@@ -27,9 +25,7 @@ public class deviceScreen extends Fragment {
     private ImageButton refreshButton;
     private bluetoothFunctions bf;
 
-    public deviceScreen() {
-        // Required empty public constructor
-    }
+    public deviceScreen() { }
 
 
     public static deviceScreen newInstance() {

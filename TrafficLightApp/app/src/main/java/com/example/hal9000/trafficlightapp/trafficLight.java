@@ -4,8 +4,7 @@ package com.example.hal9000.trafficlightapp;
  * Created by HAL 9000 on 29/03/2018.
  */
 
-public class trafficLight
-{
+public class trafficLight {
 
     private int id;
     private String state;
@@ -19,20 +18,10 @@ public class trafficLight
     private boolean fallen;
     private boolean cycleDesync;
     private boolean signalLost;
+    private boolean presence;
 
 
-   /* public trafficLight(int id, String state, String substate, String typology, String mode, String density, int distance, String battery) {
-        this.id = id;
-        this.state = state;
-        this.substate = substate;
-        this.typology = typology;
-        this.mode = mode;
-        this.density = density;
-        this.distance = distance;
-        this.battery = battery;
-    }*/
-
-    public trafficLight(int id, String state, String substate, String typology, String mode, String density, int distance, String battery, boolean opticalFailure, boolean fallen, boolean cycleDesync, boolean signalLost) {
+    public trafficLight(int id, String state, String substate, String typology, String mode, String density, int distance, String battery, boolean opticalFailure, boolean fallen, boolean cycleDesync, boolean signalLost, boolean presence) {
         this.id = id;
         this.state = state;
         this.substate = substate;
@@ -45,6 +34,7 @@ public class trafficLight
         this.fallen = fallen;
         this.cycleDesync = cycleDesync;
         this.signalLost = signalLost;
+        this.presence = presence;
     }
 
     public String getState() {
@@ -142,5 +132,13 @@ public class trafficLight
 
     public void setSignalLost(boolean signalLost) {
         this.signalLost = signalLost;
+    }
+
+    public boolean isPresence() {
+        return presence;
+    }
+
+    public void setPresence(boolean presence) {
+        this.presence = presence;
     }
 }

@@ -1,12 +1,8 @@
 package com.example.hal9000.trafficlightapp;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -15,21 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class monitoring extends Fragment {
     private OnFragmentInteractionListener mListener;
@@ -45,16 +37,14 @@ public class monitoring extends Fragment {
     private TextView densityText;
     private TextView distanceText;
     private TextView batteryText;
-    private Button backButton;
+    private CheckBox presenceBox;
+
     private Executor executor = Executors.newSingleThreadExecutor();
     private bluetoothFunctions bf;
     volatile boolean stopWorker;
-    private trafficLight trafficLight;
+    private trafficLight trafficLight =  new trafficLight(0, "-", "-", "-" ,"-" , "-", 0,  "-",false,false,false,false, false);
     private Spinner spinnerMonitor;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
-
-
-    //NotificationManager notificationManager;
 
     public monitoring() {
     }
@@ -76,22 +66,13 @@ public class monitoring extends Fragment {
         view = inflater.inflate(R.layout.fragment_monitoring, container, false);
         initVariables();
 
-
-        backButton = view.findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mListener.returnToGlobal();
-            }
-        });
         spinnerMonitor = view.findViewById(R.id.spinnerMonitor);
         spinnerMonitor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if(!trafficLightList.isEmpty())
-                {
+                if (!trafficLightList.isEmpty()) {
                     for (trafficLight tl : trafficLightList) {
-                        if(tl.getId() == (position+1))
-                        {
+                        if (tl.getId() == (position + 1)) {
                             trafficLight = tl;
                         }
                     }
@@ -104,13 +85,11 @@ public class monitoring extends Fragment {
             }
 
         });
-
+        updateInfo(trafficLight);
         return view;
     }
 
     public void initVariables() {
-        //  notificationManager = (NotificationManager)
-        //        getActivity().getSystemService(NOTIFICATION_SERVICE);
         greenImage = view.findViewById(R.id.greenLight);
         yellowImage = view.findViewById(R.id.yellowLight);
         redImage = view.findViewById(R.id.redLight);
@@ -122,6 +101,7 @@ public class monitoring extends Fragment {
         densityText = view.findViewById(R.id.densityMonitor);
         distanceText = view.findViewById(R.id.distanceMonitor);
         batteryText = view.findViewById(R.id.batteryMonitor);
+        presenceBox = view.findViewById(R.id.presenceCheck);
         bf = bluetoothFunctions.getInstance();
     }
 
@@ -132,8 +112,7 @@ public class monitoring extends Fragment {
         } catch (IOException e) {
             Toast.makeText(getActivity(), "Failed to Refresh Data", Toast.LENGTH_LONG).show();
         }
-        displayLights();
-
+        spinnerMonitor.setSelection(trafficLight.getId() - 1);
         stopWorker = false;
         final Handler handler = new Handler();
         executor.execute(new Runnable() {
@@ -155,6 +134,9 @@ public class monitoring extends Fragment {
                             } else {
                                 removeWarning("lowBatteryWarning");
                             }
+
+                            presenceBox.setChecked(trafficLight.isPresence());
+
                             if (trafficLight.isCycleDesync()) {
                                 displayWarning("desyncWarning");
                             } else {
@@ -188,17 +170,16 @@ public class monitoring extends Fragment {
                         }
                     });
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
     }
 
-    private void displayLights() {
+    public void displayLights() {
         ArrayList<String> trafficLightStrings = new ArrayList<>();
         trafficLightList = mListener.getLights();
 
@@ -262,7 +243,6 @@ public class monitoring extends Fragment {
         LinearLayout tempLayout = view.findViewById(id);
         if (tempLayout.getVisibility() == View.INVISIBLE) {
             tempLayout.setVisibility(View.VISIBLE);
-            //  notifyWarning(message);
         }
     }
 
@@ -274,6 +254,4 @@ public class monitoring extends Fragment {
             tempLayout.setVisibility(View.INVISIBLE);
         }
     }
-
-
 }

@@ -48,20 +48,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_traffic_light_yellow"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/redLight"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_traffic_light_red"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/greenLight"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_traffic_light_green" />
+                android:src="@drawable/ic_traffic_light_green"
+                android:visibility="invisible" />
 
         </FrameLayout>
 
@@ -86,7 +87,7 @@
                 android:id="@+id/idMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
 
         </TableRow>
 
@@ -103,7 +104,7 @@
                 android:id="@+id/stateMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
 
         </TableRow>
 
@@ -120,7 +121,7 @@
                 android:id="@+id/substateMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
 
         </TableRow>
 
@@ -137,7 +138,7 @@
                 android:id="@+id/typologyMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
 
         </TableRow>
 
@@ -154,7 +155,7 @@
                 android:id="@+id/modeMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
 
         </TableRow>
 
@@ -171,7 +172,7 @@
                 android:id="@+id/densityMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
 
         </TableRow>
 
@@ -188,13 +189,7 @@
                 android:id="@+id/distanceMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                android:text="-" />
 
         </TableRow>
 
@@ -211,7 +206,23 @@
                 android:id="@+id/batteryMonitor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="-" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Presence: " />
+
+            <CheckBox
+                android:id="@+id/presenceCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </TableRow>
 
@@ -332,19 +343,4 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:paddingLeft="100dp"
-        android:paddingRight="100dp">
-
-        <Button
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="OK" />
-    </LinearLayout>
 </LinearLayout>

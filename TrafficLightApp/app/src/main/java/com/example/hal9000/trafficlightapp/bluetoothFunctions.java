@@ -21,9 +21,7 @@ public class bluetoothFunctions {
     volatile boolean stopWorker;
     private boolean connected = false;
     private boolean hasAdapter = false;
-
     private int messageLength = 7;
-
     private static final bluetoothFunctions INSTANCE = new bluetoothFunctions();
 
     private bluetoothFunctions() {
@@ -41,11 +39,6 @@ public class bluetoothFunctions {
                 System.out.println("No Adapter Found");
             }
         }
-      /*  if (!bluetoothAdapter.isEnabled())
-        {
-            Intent enableBtIntent = new Intent(bluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivity(enableBtIntent);
-        }*/
     }
 
     public boolean hasDevice() {
@@ -76,7 +69,6 @@ public class bluetoothFunctions {
                 if (device.getName().equals(s)) {
                     this.device = device;
                     connected = openConnection();
-
                     res = sendData("Test");
                     break;
                 }
@@ -148,7 +140,6 @@ public class bluetoothFunctions {
                 final String data = new String(packetBytes, "US-ASCII");
                 readBufferPosition = 0;
                 return data;
-
             }
         }
         return null;

@@ -22,7 +22,6 @@ public class global_view extends Fragment {
     private PinView imageView;
     private View view;
     private ArrayList<trafficLight> trafficLightList = new ArrayList();
-    private bluetoothFunctions bf;
     private LinearLayout configReminder;
 
     public global_view() {
@@ -65,7 +64,7 @@ public class global_view extends Fragment {
         mListener = null;
     }
 
-    public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, String battery, boolean opticalFailure, boolean fallen, boolean cycleDesync, boolean signalLost)
+    public void updateTrafficLights(int id, String state, String substate, String typology, String mode, String density, int distance, String battery, boolean opticalFailure, boolean fallen, boolean cycleDesync, boolean signalLost, boolean presence)
     {
         if(!trafficLightList.isEmpty() && id <= trafficLightList.size() && id > 0) {
             trafficLight tl = trafficLightList.get(id - 1);
@@ -80,6 +79,7 @@ public class global_view extends Fragment {
             tl.setFallen(fallen);
             tl.setOpticalFailure(opticalFailure);
             tl.setSignalLost(signalLost);
+            tl.setPresence(presence);
         }
     }
 
@@ -120,7 +120,7 @@ public class global_view extends Fragment {
 
         for (int x = 0; x < numberOfLights; x++) {
             System.out.println(x);
-            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0,  "-",false,false,false,false));
+            trafficLightList.add(new trafficLight(x + 1, "-", "-", "-" ,"-" , "-", 0,  "-",false,false,false,false, false));
             MapPins.add(pinHolder.get(x));
         }
         imageView.setImage(ImageSource.asset(stringHolder.get(numberOfLights - 2)));

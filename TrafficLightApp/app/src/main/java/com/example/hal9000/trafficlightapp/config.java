@@ -1,20 +1,15 @@
 package com.example.hal9000.trafficlightapp;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -22,16 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.UUID;
+
 
 public class config extends Fragment {
-
-    private String positiveResponse = "ok"; // response that the traffic light returns if configuration is successful
-    private String negativeResponse = "no";
 
     private configInterface mListener;
     private Button applyButton;
@@ -42,16 +30,12 @@ public class config extends Fragment {
     private TextView warningText;
     private ProgressBar responseProgress;
     private Switch constructionSwitch;
-
     private String typologyOptionsValue;
     private String modeOptionsValue;
     private int distanceOptionsValue;
     private int constructionSwitchValue = 0;
-
-    private Thread workerThread;
     volatile boolean stopWorker;
     private bluetoothFunctions bf;
-    private int time;
 
     public config() {
     }
@@ -134,6 +118,11 @@ public class config extends Fragment {
             boolean sendStatus = bf.sendData(msg);
             if (sendStatus == true) {
                 mListener.updateGlobal(typologyOptionsValue);
+                Toast.makeText(getActivity(), "Configured", Toast.LENGTH_LONG).show();
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -164,55 +153,6 @@ public class config extends Fragment {
         return "C:" + typoCode + "" + modeCode + "" + distCode + "" + construction;
     }
 
-    /* private void listenForResponse() {
-         Toast.makeText(getActivity(), "Waiting for response...", Toast.LENGTH_LONG).show();
-         stopWorker = false;
-         final Handler handler = new Handler();
-         time = 100;
-         workerThread = new Thread(new Runnable() {
-             public void run() {
-
-                 while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-
-                     try {
-                         final String data = bf.listenForResponse();
-                         handler.post(new Runnable() {
-                             public void run() {
-                                 System.out.println("" + time);
-                                 time--;
-                                 if (time <= 0) {
-                                     Toast.makeText(getActivity(), "No Response", Toast.LENGTH_LONG).show();
-                                     stopWorker = true;
-                                     responseProgress.setVisibility(View.INVISIBLE);
-                                 }
-                                 System.out.println(data);
-                                 if (data.equals(positiveResponse)) {
-                                     try {
-                                         responseProgress.setVisibility(View.INVISIBLE);
-                                         stopWorker = true;
-                                     } catch (IOException e) {
-                                         e.printStackTrace();
-                                     }
-
-                                 } else if (data.equals(negativeResponse)) {
-                                     Toast.makeText(getActivity(), "Configuration Failed", Toast.LENGTH_LONG).show();
-                                     responseProgress.setVisibility(View.INVISIBLE);
-                                     stopWorker = true;
-                                 }
-                             }
-                         });
-                         Thread.sleep(100);
-                     } catch (IOException e) {
-                         e.printStackTrace();
-                     } catch (InterruptedException e) {
-                         e.printStackTrace();
-                     }
-                 }
-             }
-         });
-         workerThread.start();
-     }
- */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -230,11 +170,10 @@ public class config extends Fragment {
         mListener = null;
     }
 
-    public void updateConfiguration(int typology, int mode, int distance, boolean construction)
-    {
+    public void updateConfiguration(int typology, int mode, int distance, boolean construction) {
         typologyOptions.setSelection(typology);
         modeOptions.setSelection(mode);
-        distanceCustomOptions.setText(""+distance);
+        distanceCustomOptions.setText("" + distance);
         constructionSwitch.setChecked(construction);
         try {
             mListener.updateGlobal(typologyOptions.getSelectedItem().toString());

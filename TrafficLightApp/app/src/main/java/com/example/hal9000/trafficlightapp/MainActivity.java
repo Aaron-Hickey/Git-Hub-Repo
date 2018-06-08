@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     private String[] modeValues = {"Pendular", "Red Barrage", "Green Force"};
     private String[] densityValues = {"Low", "Average", "Strong", "Very Strong", "Max"};
     private String[] batteryValues = {"Out", "Deep Discharge", "Discharged", "Normal", "Full", "Charging"};
+    private boolean presence = false;
 
     private NotificationManager notificationManager;
 
@@ -173,9 +174,8 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
     public void updateGlobal(String typology) throws IOException {
         global_view f = (global_view) fragmentManager.findFragmentByTag("globalF");
         trafficLightList = f.createTrafficLights(typology);
-        //   System.out.println("The ID "+trafficLightList.get(0).getId());
-      //  setTitle("Global View");
-      //  swapFragment(globalF);
+        monitoring m = (monitoring) fragmentManager.findFragmentByTag("monitorF");
+        m.displayLights();
     }
 
     public void connectAdapter() {
@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 valid = false;
             }
         }
-        if (command.length() >= 13 && valid) {
+        if (command.length() >= 14 && valid) {
             //ID
             int temp = Character.getNumericValue(command.charAt(0));
             if (temp > 4 || temp < 1) {
@@ -313,6 +313,18 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
             }
             String battery = batteryValues[Character.getNumericValue(command.charAt(8))];
 
+            //Presence
+            temp = Character.getNumericValue(command.charAt(9));
+            if(temp == 1 )
+            {
+                presence = true;
+            }
+            else if(temp == 0)
+            {
+                presence = false;
+            }
+
+
             if (valid) {
                 if (Character.getNumericValue(command.charAt(8)) == 0) {
                     notifyWarning("Traffic Light " + id + " has dead battery", id);
@@ -320,32 +332,32 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
                 if (Character.getNumericValue(command.charAt(8)) == 1 || Character.getNumericValue(command.charAt(8)) == 2) {
                     notifyWarning("Traffic Light " + id + " has low battery", id);
                 }
-                if (Character.getNumericValue(command.charAt(9)) == 1) {
+                if (Character.getNumericValue(command.charAt(10)) == 1) {
                     opticalFailure = true;
                     notifyWarning("Traffic Light " + id + " has an optical failure", id);
                 } else {
                     opticalFailure = false;
                 }
-                if (Character.getNumericValue(command.charAt(10)) == 1) {
+                if (Character.getNumericValue(command.charAt(11)) == 1) {
                     fallen = true;
                     notifyWarning("Traffic Light " + id + " has fallen over", id);
                 } else {
                     fallen = false;
                 }
-                if (Character.getNumericValue(command.charAt(11)) == 1) {
+                if (Character.getNumericValue(command.charAt(12)) == 1) {
                     cycleDesync = true;
                     notifyWarning("Traffic Light " + id + " has a cycle desync", id);
                 } else {
                     cycleDesync = false;
                 }
-                if (Character.getNumericValue(command.charAt(12)) == 1) {
+                if (Character.getNumericValue(command.charAt(13)) == 1) {
                     signalLost = true;
                     notifyWarning("Traffic Light " + id + " has lost signal", id);
                 } else {
                     signalLost = false;
                 }
 
-                f.updateTrafficLights(id, state, substate, typology, mode, density, distance, battery, opticalFailure, fallen, cycleDesync, signalLost);
+                f.updateTrafficLights(id, state, substate, typology, mode, density, distance, battery, opticalFailure, fallen, cycleDesync, signalLost,presence);
             } else {
                 notifyWarning("Invalid Response from Traffic Light", 6);
             }
@@ -395,11 +407,8 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
 
     public void notifyWarning(String message, int id) {
         Intent intent = new Intent(this, MainActivity.class);
-// use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-// build notification
-// the addAction re-use the same intent to keep the example short
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 
             long[] pattern = {0, 500, 250, 500};
@@ -442,11 +451,8 @@ public class MainActivity extends AppCompatActivity implements global_view.globa
 
     public void notifyAlert(String message) {
         Intent intent = new Intent(this, MainActivity.class);
-// use System.currentTimeMillis() to have a unique ID for the pending intent
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-// build notification
-// the addAction re-use the same intent to keep the example short
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 
             long[] pattern = {0, 2000};
